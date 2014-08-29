@@ -1,0 +1,9 @@
+<?php
+
+// FOR EXAMPLE:
+//    $config['query_location'] = "http://127.0.0.1:8080/solr/collection2/select";
+    $config['query_location'] = "";
+
+    
+
+?>
