@@ -48,6 +48,9 @@ var facet_proxy = 'data_proxy.php?f&q='
 var show_facets = ["subgenre", "type", "language", "tags", "collector", "creator", "subject", "literary", "extreme", "text_length_group"]
 var facet_addition = "&facet=true&facet.mincount=1&wt=json&rows=0&facet.field=" + show_facets.join("&facet.field=")
 
+var province_coordinate_data = "http://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wfs?service=WFS&version=2.0.0&request=GetFeature&outputformat=json&typename=provincies"
+var county_coordinate_data = "http://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wfs?service=WFS&version=2.0.0&request=GetFeature&outputformat=json&typename=gemeentes"
+
 var waiting = true;
 
 //var initial_location_query = "*:*";
@@ -75,23 +78,25 @@ function ViewModel() {
     self.opacity_collectors = ko.observable(opacity_collectors);
     self.opacity_creators = ko.observable(opacity_creators);
 
-    //checkboxes for loading values
-    self.show_locations = ko.observable(show_locations);
+    //checkboxes for showing objects
     self.show_provinces = ko.observable(show_provinces);
     self.show_counties = ko.observable(show_counties);
+    self.show_locations = ko.observable(show_locations);
     self.show_collectors = ko.observable(show_collectors);
     self.show_creators = ko.observable(show_creators);
-    
+    //lines / connections
     self.show_collectors_locations = ko.observable(show_collectors_locations);
     self.show_collectors_creators = ko.observable(show_collectors_creators);
     
     self.show_facets = ko.observableArray(show_facets);
     
+    //observable arrays for containing search/browse results
     self.facets_results = ko.observableArray([]);
     self.location_results = ko.observableArray([]);
     self.creator_results = ko.observableArray([]);
     self.collector_results = ko.observableArray([]);
 
+    //keeping track of selected objects
     self.selected_location = ko.observableArray([]);
     self.selected_province = ko.observableArray([]);
     self.selected_county = ko.observableArray([]);
@@ -118,7 +123,7 @@ function ViewModel() {
             UpdateLocationData(location_proxy + self.location_query(), self);
         }
         if (self.show_collectors){
-            UpdateCollectorData(location_proxy + self.collector_query(), self);
+            UpdateCollectorData(collector_proxy + self.collector_query(), self);
         }
         if (self.show_creators){
             UpdateCreatorData(creator_proxy + self.creator_query(), self);

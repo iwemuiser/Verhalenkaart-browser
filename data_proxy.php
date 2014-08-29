@@ -1,5 +1,7 @@
 <?php
 
+    include("config.php");
+
     function rebuild_query($get) { 
         $query = "";
         $and = "";
@@ -13,11 +15,6 @@
     function replace_spaces_and_cancellations($url){
         return str_replace("\\", "", str_replace(" ","%20",$url));
     }
-    
-//    $id = (integer) $_GET['id'];
-//localhost here
-    $config['query_location'] = "http://127.0.0.1:8080/solr/collection2/select";
-//    $example_query = "?q=*:*&amp;start=0&amp;rows=0&amp;sort=added+desc&amp;facet=true&amp;facet.sort=count&amp;facet.field=subgenre&amp;facet.field=type&amp;facet.field=language&amp;facet.field=item_type&amp;facet.field=locality&amp;wt=json";
     
     $total_query = "";
     

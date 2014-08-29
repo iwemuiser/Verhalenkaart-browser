@@ -133,7 +133,7 @@ function MapViewer(vm){
                         "locality":     "red",
                         "administrative_area_level_1": "purple",
                         "rest":         "black",
-                        "collector":    "crimson",
+                        "collector":    "blue",
                         "creator":      "lightgreen"};
 
 //    colors = ["#E56717", "#E66C2C", "#F87217", "#F87431", "#E67451", "#FF8040", "#F88017", "#FF7F50", "#F88158", "#F9966B", "#E78A61", "#E18B6B", "#E77471", "#F75D59", "#E55451", "#E55B3C", "#FF0000", "#FF2400", "#F62217", "#F70D1A", "#F62817", "#E42217", "#E41B17", "#DC381F", "#C34A2C", "#C24641", "#C04000", "#C11B17", "#9F000F", "#990012", "#8C001A", "#954535", "#7E3517", "#8A4117", "#7E3817", "#800517"];
@@ -195,12 +195,16 @@ function MapViewer(vm){
                     .attr("cy", (d.y + 4000) + "px");
             }
             
-            function transformRect(d) {
-                d = new google.maps.LatLng(d.value.latitude, d.value.longitude);
+            function transformRect(d, size) {
+                size = 10;
+                var lat_lon = d.key.split(",");
+                if (lat_lon[0] == ""){ lat_lon = [52.655694, 3.913930]}
+                d = new google.maps.LatLng(lat_lon[0], lat_lon[1]);
+//                d = new google.maps.LatLng(d.value.latitude, d.value.longitude);
                 d = projection.fromLatLngToDivPixel(d); 
                 return d3.select(this)
-                    .attr("x", (d.x + 4000) + "px")
-                    .attr("y", (d.y + 4000) + "px");
+                    .attr("x", ((d.x - (size/2)) + 4000) + "px")
+                    .attr("y", ((d.y - (size/2)) + 4000) + "px");
             }
 
             function transformPath(d) {
@@ -210,7 +214,6 @@ function MapViewer(vm){
                 return d3.select(this)
                     .attr("transform", "translate(" + (d.x + 4000) + "," + (d.y + 4000) + ")");
             }
-
 
             var info_click_tip = d3.select("body")
                 .append("div")
@@ -230,17 +233,17 @@ function MapViewer(vm){
                 .text("");
             
             function updateCollectors(collectors_data){
-                console.log("collectors_data: " + collectors_data.length);
+//                console.log("collectors_data: " + collectors_data.length);
+
+                var symbol = d3.svg.symbol().type('diamond');
 
                 var collector_marker = collector_layer.selectAll("path")
                     .data(collectors_data)
-                    .each(transformRect)
-
+                    .each(transformPath);
+                    
                 collector_marker.enter()
-                    .append("rect")
-                    .attr("width", 20)
-                    .attr("height", 20)
-//                    .attr('d', symbol.size(10))
+                    .append("path")
+                    .attr('d', symbol.size(2000))
                     .attr("stroke","black")
                     .attr("stroke-width", "1.5px")
                     .attr("fill", object_colors["collector"])
@@ -249,11 +252,9 @@ function MapViewer(vm){
                         d3.select(this)
                             .transition()
                             .ease("elastic")
-//                            .attr("d", symbol.size(function(d){
-//                                return d.values.length * (map.getZoom() * 25);
-//                            }))
-                            .attr("width", 8 + map.getZoom() * 3)
-                            .attr("height", 8 + map.getZoom() * 3)
+                            .attr("d", symbol.size(function(d){
+                                return 50 + (d.values.length * 5) + (map.getZoom() * 50);
+                            }))
                             .style("opacity", 1);
                     })
                     .on("mouseout", function(d){
@@ -261,17 +262,17 @@ function MapViewer(vm){
                         d3.select(this)
                             .transition()
                             .ease("elastic")
-                            .attr("width", 8 + map.getZoom() * 2)
-                            .attr("height", 8 + map.getZoom() * 2)
-//                            .attr("d", symbol.size(function(d){
-//                                    return (d.values.length * (map.getZoom() * 5));
-//                            }))
+                            .attr("d", symbol.size(function(d){
+                                    return 20 + (d.values.length * 10) + (map.getZoom() * 50);
+                            }))
                             .style("opacity", vm.opacity_collectors()); //get the opacity value from the slider again
                         tooltip.style("visibility", "hidden");
                     })
                     .on("click", function(d){
-                        // search tales from these creators
+                        // search all tales from these collectors
                         console.log(d);
+                    })
+                    .on("mousemove", function(){
                     });
 
                 //Update…
@@ -280,16 +281,14 @@ function MapViewer(vm){
                         return i + Math.sqrt(d.values.length) * 20;
                     })
                     .duration(1500)
-                    .attr("width", 8 + map.getZoom() * 3)
-                    .attr("height", 8 + map.getZoom() * 3)
-//                    .attr("d", symbol.size(function(d){
-//                            return (d.values.length * (map.getZoom() * 5));
-//                    }))
+                    .attr("d", symbol.size(function(d){
+                        return 20 + (d.values.length * 10) + (map.getZoom() * 50);
+                    }))
                     .attr("fill", function(d){
-                        if (vm.bubbles_color_intensity()){
-                            return d3.rgb(255, 255 - (Math.log(d.values.length) * 150), 155 - (Math.log(d.values.length) * 150));
+//                        if (vm.bubbles_color_intensity()){
+//                            return d3.rgb(255, 255 - (Math.log(d.values.length) * 150), 155 - (Math.log(d.values.length) * 150));
 //                            return d3.rgb((Math.log(d.values.length) * 100), 255 - (Math.log(d.values.length) * 70), 255);
-                        }
+//                        }
                         return object_colors["collector"];
                     })
                     .style("opacity", function(){
@@ -298,17 +297,25 @@ function MapViewer(vm){
                     .style("visibility", function() {
                         return vm.show_collectors() ? "visible" : "hidden";
                     });
+                    
+                //exit
+                collector_marker.exit()
+                    .transition()
+                    .duration(1000)
+                    .attr("d", 0)
+                    .attr("opacity", 0)
+                    .remove();
             }
             
             function updateCreators(creators_data){
                 
 //                console.log("creators_data: " + creators_data.length);
                 
-                var symbol = d3.svg.symbol().type('triangle-up');
+                var symbol = d3.svg.symbol().type('triangle-down');
                 
                 var creator_marker = creator_layer.selectAll("path")
                     .data(creators_data)
-                    .each(transformPath)
+                    .each(transformPath);
 
                 creator_marker.enter()
                     .append("path")
@@ -322,7 +329,7 @@ function MapViewer(vm){
                             .transition()
                             .ease("elastic")
                             .attr("d", symbol.size(function(d){
-                                return d.values.length * (map.getZoom() * 25);
+                                return (d.values.length * 5) + (map.getZoom() * 50);
                             }))
                             .style("opacity", 1);
                     })
@@ -332,7 +339,7 @@ function MapViewer(vm){
                             .transition()
                             .ease("elastic")
                             .attr("d", symbol.size(function(d){
-                                    return (d.values.length * (map.getZoom() * 5));
+                                    return (d.values.length * 5) + (map.getZoom() * 5);
                             }))
                             .style("opacity", vm.opacity_creators()); //get the opacity value from the slider again
                         tooltip.style("visibility", "hidden");
@@ -340,6 +347,8 @@ function MapViewer(vm){
                     .on("click", function(d){
                         // search tales from these creators
                         console.log(d);
+                    })
+                    .on("mousemove", function(){
                     });
                 
                 //Update…
@@ -349,7 +358,7 @@ function MapViewer(vm){
                     })
                     .duration(1500)
                     .attr("d", symbol.size(function(d){
-                            return (d.values.length * (map.getZoom() * 5));
+                        return (d.values.length * 50) + (map.getZoom() * 5);
                     }))
                     .attr("fill", function(d){
                         if (vm.bubbles_color_intensity()){
@@ -364,6 +373,14 @@ function MapViewer(vm){
                     .style("visibility", function() {
                         return vm.show_creators() ? "visible" : "hidden";
                     });
+                    
+                //exit
+                creator_marker.exit()
+                    .transition()
+                    .duration(1000)
+                    .attr("d", 0)
+                    .attr("opacity", 0)
+                    .remove();
             }
             
             function updateLocations(locality_data){
