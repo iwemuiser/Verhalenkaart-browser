@@ -26,10 +26,10 @@
         <h4 id="view_control_titel">Object besturing</h4>
         <div id="viewControlInner">
             <form>
-                <input type="checkbox" name="show_provinces" data-bind="checked: show_provinces" checked>
+<!--                <input type="checkbox" name="show_provinces" data-bind="checked: show_provinces" checked>
                 Provincies <br>
                 <input type="checkbox" name="show_counties" data-bind="checked: show_counties" checked>
-                Gemeenten <br>
+                Gemeenten <br>-->
                 <input type="checkbox" name="show_locations" data-bind="checked: show_locations" checked>
                 <input type="range" name="opacity_locations" min="0" max="1" step="0.05" data-bind="value: opacity_locations">
                 <svg height="10" width="10">
@@ -50,7 +50,7 @@
                 </svg>
                 Vertellers <br>
             </form>
-            <form>
+<!--            <form>
                 <input type="checkbox" name="lines">
                 <svg height="10" width="20">
                   <line x1="0" y1="2" x2="20" y2="8" style="stroke:rgb(0,0,0);stroke-width:2" />
@@ -62,11 +62,12 @@
                   <line x1="0" y1="2" x2="20" y2="8" style="stroke:rgb(0,0,255);stroke-width:2" />
                 </svg>
                 Verzamelaars -> Vertellers<br>
-            </form>
+            </form>-->
         </div>
         
         <div id="viewControlInner">
             <form>
+                <input type="checkbox" name="show_info_windows" data-bind="checked: show_help_windows">Gebruikshulp<br>
                 <input type="checkbox" name="show_info_windows" data-bind="checked: show_info_windows">Facetten<br>
                 <input type="checkbox" name="bubbles_same_size" data-bind="checked: bubbles_same_size">Zelfde grootte<br>
                 <input type="checkbox" name="bubbles_color_intensity" data-bind="checked: bubbles_color_intensity">Op kleur<br>
@@ -77,7 +78,7 @@
 
     <div class="toplayer" id="search_container_bg"></div>
     <div class="toplayer" id="search_container">
-        Q: <input id="searchBox" class="input-search" data-bind="value:location_query, valueUpdate: 'afterkeydown', event: { keypress: searchKeyboardCmd}" size="50"/>
+        Q: <input id="searchBox" class="input-search" data-bind="value:location_query, valueUpdate: 'afterkeydown', event: { keypress: searchKeyboardCmd}" style='width:90%'/>
         <center>
         <button class="search_button" data-bind="click:doSearch">Search</button>
         <button class="reset_button" data-bind="click:emptySearchbox">Reset</button>
@@ -98,10 +99,56 @@
     <div class="toplayer viewer" id="waitWindow"><br><center>Please <br> wait..</center></div>
         
     <div class="toplayer info" id="helpWindow">
+        <div style="direction: ltr; padding: 3px;">
         <h3><center>Gebruikshulp</center></h3>
-        <h4>Zoekvelden</h4>
+        <h4>Verhalen zoekveld</h4>
+        Zoeken kan met de <a href="http://www.solrtutorial.com/solr-query-syntax.html">SolR query syntax</a>. Een aantal voorbeeld zoektermen:<br>
+        <input id="hs1" class="input-search" value="subgenre:sprookje" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs1">Search</button><br>
+
+        <input id="hs8" class="input-search" value='subgenre:"sprookje" AND NOT type:"boek"' style='width:300px'/>
+        <button class="search_button" data-bind="click:hs8">Search</button><br>
+
+        <input id="hs2" class="input-search" value="type:mondeling" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs2">Search</button><br>
+
+        <input id="hs3" class="input-search" value="administrative_area_level_1:Friesland" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs3">Search</button><br>
+
+        <input id="hs4" class="input-search" value='language:"Standaardnederlands"' style='width:300px'/>
+        <button class="search_button" data-bind="click:hs4">Search</button><br>
+
+        <input id="hs5" class="input-search" value="locality:*land" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs5">Search</button><br>
+
+        <input id="hs6" class="input-search" value="literary:*bewerkt*" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs6">Search</button><br>
         
+        <input id="hs7" class="input-search" value="NOT administrative_area_level_1:*land" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs7">Search</button><br>
         
+        <input id="hs9" class="input-search" value="date:2001*" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs9">Search</button><br>
+        <br>
+        
+        <h4>Zoekresultaten</h4>
+        De zoekresultaten worden weergegeven in rode bollen. U kunt nog wat spelen met de kleuren, en de bollen allemaal even groot maken, bijvoorbeeld om overlap te voorkomen. Ook kunt u de transparantie veranderen zodat er een soort "heatmap" ontstaat. Door op het checkboxje ervoor te klikken kunt u de resultaten geheel weghalen van de kaart.
+        <br>
+        <br>
+        
+        <h4>Facetten (taartdiagrammen rechts)</h4>
+        Deze diagrammen geven aan welke metadata voorkomt in de resultaten. De waarden hoeven niet per se op te tellen naar het aantal zoekresultaten, omdat sommige verhalen bijvoorbeeld meerdere subgenres hebben.<br>
+        De facetten zijn aan te klikken. Hierbij wordt de zoekactie uitgebreid met het facet dat u aangeklikt heeft.
+        <br>
+        <br>
+        
+        <h4>Tijdlijn</h4>
+        De tijdlijn is er alleen om een indicatie te geven van wanneer de verhalen in de zoekresultaten zijn gehoord, of ingevoerd.
+        <br>
+        <br>
+        
+        <h4>Meer volgt</h4>
+        </div>
     </div>
     
   </body>

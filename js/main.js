@@ -19,6 +19,7 @@ window.onload = function () {
 }
 
 var show_info_windows = true;
+var show_help_windows = true;
 
 var bubble_sizes_multiplier = 1.0;
 
@@ -67,6 +68,7 @@ function ViewModel() {
     
     self.waiting = ko.observable(waiting);
     
+    self.show_help_windows = ko.observable(show_help_windows);
     self.show_info_windows = ko.observable(show_info_windows);
     self.bubble_size = ko.observable(bubble_sizes_multiplier);
     
@@ -114,6 +116,59 @@ function ViewModel() {
     self.doFacetRetrieve = function(){
         self.location_query = proxy + self.initial_facet_query();
     }
+
+    
+    //helpsearches
+    self.hs1 = function (hq) {
+        self.location_query($("#hs1").val());
+        self.doSearch();
+    }
+    self.hs2 = function (hq) {
+        self.location_query($("#hs2").val());
+        self.doSearch();
+    }
+    self.hs3 = function (hq) {
+        self.location_query($("#hs3").val());
+        self.doSearch();
+    }
+    self.hs4 = function (hq) {
+        self.location_query($("#hs4").val());
+        self.doSearch();
+    }
+    self.hs5 = function (hq) {
+        self.location_query($("#hs5").val());
+        self.doSearch();
+    }
+    self.hs6 = function (hq) {
+        self.location_query($("#hs6").val());
+        self.doSearch();
+    }
+    self.hs7 = function (hq) {
+        self.location_query($("#hs7").val());
+        self.doSearch();
+    }
+    self.hs8 = function (hq) {
+        self.location_query($("#hs8").val());
+        self.doSearch();
+    }
+    self.hs9 = function (hq) {
+        self.location_query($("#hs9").val());
+        self.doSearch();
+    }
+    self.hs10 = function (hq) {
+        self.location_query($("#hs10").val());
+        self.doSearch();
+    }
+    self.hs11 = function (hq) {
+        self.location_query($("#hs11").val());
+        self.doSearch();
+    }
+    self.hs12 = function (hq) {
+        self.location_query($("#hs12").val());
+        self.doSearch();
+    }
+
+
 
     self.doSearch = function () {
         if (self.location_query() == ""){

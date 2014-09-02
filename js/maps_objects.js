@@ -1,5 +1,6 @@
 //fires when the system is waiting for data (location data, since this loads the longest by far)
 function WaitViewer(vm){
+
     this.init = function(){
         
         vm.show_info_windows.subscribe( function (){
@@ -11,6 +12,15 @@ function WaitViewer(vm){
             }
         });
         
+//        $(".info").toggle("explode"); //start toggled
+        vm.show_help_windows.subscribe( function (){
+            if (vm.show_help_windows()){
+                $(".info").toggle("explode");
+            }
+            else{
+                $(".info").toggle("explode");
+            }
+        });
         
         vm.waiting.subscribe( function (){
             if (vm.waiting()){

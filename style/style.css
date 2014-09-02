@@ -24,8 +24,6 @@ h1,h2,h3,h4{
 
 #viewControl {
     -moz-border-radius-topleft: 25px 50px;
-    -moz-border-radius-bottomleft: 25px 50px;
-    border-bottom-left-radius: 25px 50px;
     border-bottom-right-radius: 25px 50px;
     padding: 4px;
     box-shadow: 5px 5px 5px #888888;
@@ -57,8 +55,8 @@ h1,h2,h3,h4{
     background: transparant;
     top: -2px;
     left: 450px;
+    right: 450px;
     opacity: 1;
-    width: 300px;
 }
 
 #search_container_bg {
@@ -71,8 +69,8 @@ h1,h2,h3,h4{
     background: white;
     top: -2px;
     left: 450px;
+    right: 450px;
     opacity: 0.7;
-    width: 300px;
     height: 48px;
 }
 
@@ -159,6 +157,29 @@ h1,h2,h3,h4{
 
 #infoWindow svg {
     width: 340px;
+}
+
+#helpWindow {
+/*    -moz-border-radius-topleft: 25px 50px;
+    -moz-border-radius-bottomleft: 25px 50px;*/
+    -moz-border-radius-topright: 25px 50px;
+    -moz-border-radius-bottomright: 25px 50px;
+/*    border-top-left-radius: 25px 50px;
+    border-bottom-left-radius: 25px 50px;*/
+    border-top-right-radius: 25px 50px;
+    border-bottom-right-radius: 25px 50px;
+    padding: 4px;
+    box-shadow: 5px 5px 5px #888888;
+    position: absolute;
+    background: #EEE;
+    top: 160px;
+    bottom: 80px;
+/*    right: 300px;*/
+    left: 0px;
+    width: 400px;
+    opacity: 0.94;
+    overflow-y: scroll;
+    direction: rtl;
 }
 
 .center, .center svg {
