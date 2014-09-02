@@ -168,11 +168,9 @@ function ViewModel() {
         self.doSearch();
     }
 
-
-
     self.doSearch = function () {
         if (self.location_query() == ""){
-            console.log("replacing empty query");
+//            console.log("replacing empty query");
             self.location_query("*:*");
         }
         if (self.show_locations()){
@@ -223,7 +221,7 @@ function d3_format_facets(raw_facets){
 }
 
 function UpdateFacetData(facet_query, vm){
-    console.log(facet_query);
+//    console.log(facet_query);
     $.getJSON(facet_query, function(response) {
 //        var this_facets_results = vm.facets_results;
         formatted_response = d3_format_facets(response.facet_counts.facet_fields);
@@ -233,7 +231,7 @@ function UpdateFacetData(facet_query, vm){
 }
 
 function UpdateLocationData(location_query, vm){
-    console.log("LOCATION:" + location_query);
+//    console.log("LOCATION:" + location_query);
     vm.waiting(true);
     vm.waiting.valueHasMutated();
     $.getJSON(location_query, function(response) {
@@ -249,7 +247,7 @@ function UpdateLocationData(location_query, vm){
 }
 
 function UpdateCreatorData(creator_query, vm){
-    console.log("CREATORS:" + creator_query);
+//    console.log("CREATORS:" + creator_query);
     $.getJSON(creator_query, function(response) {
 //        var jq_results = vm.creator_results;
         nested_results = d3.nest()

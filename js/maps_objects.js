@@ -166,7 +166,7 @@ function MapViewer(vm){
         }
         return nr;
     }
-    
+/*    
     this.update_data_location = function(location){
         console.log("updating data from: " + location);
         d3.json(location, function(json_data){
@@ -177,7 +177,7 @@ function MapViewer(vm){
                 .entries(json_data.response.docs);
         });
     }
-    
+  */  
     // Add the container when the overlay is added to the map.
     this.init = function(){
         overlay.onAdd = function() {
@@ -304,7 +304,7 @@ function MapViewer(vm){
                                 })
                                 return return_this;
                             })
-                        console.log(d);
+//                        console.log(d);
                     })
                     .on("mousemove", function(){
                         tooltip.style("top", (event.pageY-10)+"px")
@@ -384,7 +384,7 @@ function MapViewer(vm){
                     })
                     .on("click", function(d){
                         // search tales from these creators
-                        console.log(d);
+//                        console.log(d);
                     })
                     .on("mousemove", function(){
                     });
@@ -470,7 +470,7 @@ function MapViewer(vm){
                                     .style("left",(event.pageX+10)+"px");
                     })
                     .on("click", function(d){
-                        console.log(d);
+//                        console.log(d);
                         info_click_tip.style("visibility", "visible")
                             .style("top", (event.pageY-25)+"px")
                             .style("left",(event.pageX+10)+"px")
@@ -530,7 +530,7 @@ function MapViewer(vm){
             
             //settings subscriptions
             vm.location_results.subscribe( function (){
-                console.log("redrawing map: location update");
+//                console.log("redrawing map: location update");
                 updateLocations(vm.location_results());
                 updateCreators(vm.creator_results());
                 updateCollectors(vm.collector_results());
