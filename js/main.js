@@ -56,7 +56,7 @@ var county_coordinate_data = "http://geodata.nationaalgeoregister.nl/bestuurlijk
 var waiting = true;
 
 //var initial_location_query = "*:*";
-var initial_location_query = "type:boek";
+var initial_location_query = "subgenre:sprookje";
 var initial_creator_query = "*:*";
 var initial_collector_query = "*:*";
 var initial_facet_query = initial_location_query;

@@ -230,6 +230,7 @@ function MapViewer(vm){
 
             function transformPath(d) {
                 var lat_lon = d.key.split(",");
+                if (lat_lon[0] == ""){ lat_lon = [52.444694, 3.602930]} //somewhere in the water!!
                 d = new google.maps.LatLng(lat_lon[0], lat_lon[1]);
                 d = projection.fromLatLngToDivPixel(d); 
                 return d3.select(this)
@@ -364,11 +365,14 @@ function MapViewer(vm){
                             .transition()
                             .ease("elastic")
                             .attr("d", symbol_tri.size(function(d){
-                                return (d.values.length * 50) + (map.getZoom() * 50);
+                                return Math.min((d.values.length * 50) + (map.getZoom() * 50), 2000);
+//                                return (d.values.length * 50) + (map.getZoom() * 50);
                             }))
                             .style("opacity", 1);
                         map.setOptions({draggableCursor:'crosshair'});
-                        tooltip.style("visibility", "hidden");
+                        tooltip.style("visibility", "visible")
+                            .text(d.values[0].administrative_area_level_1 + " - " + d.values[0].locality + ": " + d.values.length);
+
                     })
                     .on("mouseout", function(d){
                         var symbol_tri = d3.svg.symbol().type('triangle-down'); //Need to re-initiate?
@@ -376,7 +380,7 @@ function MapViewer(vm){
                             .transition()
                             .ease("elastic")
                             .attr("d", symbol_tri.size(function(d){
-                                    return (d.values.length * 50) + (map.getZoom() * 5);
+                                    return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
                             }))
                             .style("opacity", vm.opacity_creators()); //get the opacity value from the slider again
                         map.setOptions({draggableCursor:'default'});
@@ -387,6 +391,8 @@ function MapViewer(vm){
 //                        console.log(d);
                     })
                     .on("mousemove", function(){
+                        tooltip.style("top", (event.pageY-10)+"px")
+                                    .style("left",(event.pageX+10)+"px");
                     });
                 
                 //Update…
@@ -396,7 +402,7 @@ function MapViewer(vm){
                     })
                     .duration(1500)
                     .attr("d", symbol_tri.size(function(d){
-                        return (d.values.length * 50) + (map.getZoom() * 5);
+                        return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
                     }))
                     .attr("fill", function(d){
                         if (vm.bubbles_color_intensity()){
@@ -475,7 +481,7 @@ function MapViewer(vm){
                             .style("top", (event.pageY-25)+"px")
                             .style("left",(event.pageX+10)+"px")
                             .html(function(){
-                                var return_this = "Volksverhalen:<br>";
+                                var return_this = "Volksverhalen (" +  + d.values.length + "):<br>";
                                 d.values.forEach(function(item){
                                     return_this += "<a target=\"vb\" href=\"http://www.verhalenbank.nl/items/show/" + item.id + "\">" + item.identifier + " - " + item.title + "</a><br>";
                                 })

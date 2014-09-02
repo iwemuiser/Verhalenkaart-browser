@@ -103,7 +103,13 @@
         <h3><center>Gebruikshulp</center></h3>
         <h4>Verhalen zoekveld</h4>
         Zoeken kan met de <a href="http://www.solrtutorial.com/solr-query-syntax.html">SolR query syntax</a>. Een aantal voorbeeld zoektermen:<br>
-        <input id="hs1" class="input-search" value="subgenre:sprookje" style='width:300px'/>
+        
+        Alles:
+        <input id="hs10" class="input-search" value="*:*" style='width:260px'/>
+        <button class="search_button" data-bind="click:hs10">Search</button><br>
+                
+        Alle sprookjes:
+        <input id="hs1" class="input-search" value="subgenre:sprookje" style='width:190px'/>
         <button class="search_button" data-bind="click:hs1">Search</button><br>
 
         <input id="hs8" class="input-search" value='subgenre:"sprookje" AND NOT type:"boek"' style='width:300px'/>
