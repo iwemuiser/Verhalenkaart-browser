@@ -260,7 +260,7 @@ function UpdateCreatorData(creator_query, vm){
 
 
 function UpdateCollectorData(collector_query, vm){
-    console.log("COLLECTOTS:" + collector_query);
+//    console.log("COLLECTOTS:" + collector_query);
     $.getJSON(collector_query, function(response) {
 //        var jq_results = vm.creator_results;
         nested_results = d3.nest()

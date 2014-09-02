@@ -1,8 +1,8 @@
 function TimelineViewer(vm){
     this.init = function(){
-        console.log("timeline viewer init");
+//        console.log("timeline viewer init");
         vm.location_results.subscribe( function (){
-            console.log("timeline data updated");
+//            console.log("timeline data updated");
 //            console.log(vm.location_results());
             d3.selectAll("#timeWindow").selectAll("svg").remove(); // resetting the information screen
 //            vm.location_results().forEach(function(d){
