@@ -19,6 +19,7 @@ window.onload = function () {
 }
 
 var show_info_windows = true;
+
 var bubble_sizes_multiplier = 1.0;
 
 var bubbles_same_size = false;

@@ -8,7 +8,7 @@
     <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="js/dynamic_pie_charts.js"></script>
     <script type="text/javascript" src="js/verhalen_timeline.js"></script>
-    <script type="text/javascript" src="js/circle_click.js"></script>
+    <script type="text/javascript" src="js/maps_objects.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 	<link rel="stylesheet" type="text/css" href="style/style.css" media="all"/>
     <script>
@@ -67,7 +67,7 @@
         
         <div id="viewControlInner">
             <form>
-                <input type="checkbox" name="show_info_windows" data-bind="checked: show_info_windows">Info<br>
+                <input type="checkbox" name="show_info_windows" data-bind="checked: show_info_windows">Facetten<br>
                 <input type="checkbox" name="bubbles_same_size" data-bind="checked: bubbles_same_size">Zelfde grootte<br>
                 <input type="checkbox" name="bubbles_color_intensity" data-bind="checked: bubbles_color_intensity">Op kleur<br>
                 <input type="checkbox" name="item_cloud">Cloud<br>
@@ -75,8 +75,8 @@
         </div>
     </div>
 
-    <div class="toplayer viewer" id="search_container_bg"></div>
-    <div class="toplayer viewer" id="search_container">
+    <div class="toplayer" id="search_container_bg"></div>
+    <div class="toplayer" id="search_container">
         Q: <input id="searchBox" class="input-search" data-bind="value:location_query, valueUpdate: 'afterkeydown', event: { keypress: searchKeyboardCmd}" size="50"/>
         <center>
         <button class="search_button" data-bind="click:doSearch">Search</button>
@@ -89,14 +89,20 @@
     
     <div class="toplayer viewer" id="infoWindowBG"></div>
     <div class="toplayer viewer" id="infoWindow" style="overflow-y:scroll; overflow-x:hidden;">
-        <img></img>
-        <h4 id="statistieken_titel">Statistieken</h4>
+        <center><h4 id="statistieken_titel">Statistieken</h4></center>
         <div class="div_RootBody" id="pie_chart_2">
           <div class="chart"></div>
         </div>
     </div>
     
-    <div class="toplayer viewer" id="waitWindow"><br><center>Please <br> wait..<center></div>
+    <div class="toplayer viewer" id="waitWindow"><br><center>Please <br> wait..</center></div>
+        
+    <div class="toplayer info" id="helpWindow">
+        <h3><center>Gebruikshulp</center></h3>
+        <h4>Zoekvelden</h4>
+        
+        
+    </div>
     
   </body>
 </html>

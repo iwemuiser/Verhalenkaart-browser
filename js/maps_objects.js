@@ -1,6 +1,17 @@
 //fires when the system is waiting for data (location data, since this loads the longest by far)
 function WaitViewer(vm){
     this.init = function(){
+        
+        vm.show_info_windows.subscribe( function (){
+            if (vm.show_info_windows()){
+                $(".viewer").toggle("explode");
+            }
+            else{
+                $(".viewer").toggle("explode");
+            }
+        });
+        
+        
         vm.waiting.subscribe( function (){
             if (vm.waiting()){
                 d3.select("#waitWindow")
@@ -133,7 +144,7 @@ function MapViewer(vm){
                         "locality":     "red",
                         "administrative_area_level_1": "purple",
                         "rest":         "black",
-                        "collector":    "crimson",
+                        "collector":    "blue",
                         "creator":      "lightgreen"};
 
 //    colors = ["#E56717", "#E66C2C", "#F87217", "#F87431", "#E67451", "#FF8040", "#F88017", "#FF7F50", "#F88158", "#F9966B", "#E78A61", "#E18B6B", "#E77471", "#F75D59", "#E55451", "#E55B3C", "#FF0000", "#FF2400", "#F62217", "#F70D1A", "#F62817", "#E42217", "#E41B17", "#DC381F", "#C34A2C", "#C24641", "#C04000", "#C11B17", "#9F000F", "#990012", "#8C001A", "#954535", "#7E3517", "#8A4117", "#7E3817", "#800517"];
@@ -145,7 +156,18 @@ function MapViewer(vm){
         }
         return nr;
     }
-        
+    
+    this.update_data_location = function(location){
+        console.log("updating data from: " + location);
+        d3.json(location, function(json_data){
+            //process data to fit d3
+            locality_data = d3.nest()
+                .key(function(d) { return [n_decimals(d.latitude, 3), n_decimals(d.longitude, 3)]; })
+    //            .key(function(d) { return d.locality; })
+                .entries(json_data.response.docs);
+        });
+    }
+    
     // Add the container when the overlay is added to the map.
     this.init = function(){
         overlay.onAdd = function() {
@@ -164,9 +186,13 @@ function MapViewer(vm){
                 .append("g")
                 .attr("class","creators");
 
+            var collector_layer = object_layer
+                .append("g")
+                .attr("class","collectors");
+
+                
             // drop this into global scope
             chor=locatie_layer;
-            chor2=creator_layer;
 
             var projection = this.getProjection(), padding = 10;
 
@@ -180,12 +206,16 @@ function MapViewer(vm){
                     .attr("cy", (d.y + 4000) + "px");
             }
             
-            function transformRect(d) {
-                d = new google.maps.LatLng(d.value.latitude, d.value.longitude);
+            function transformRect(d, size) {
+                size = 10;
+                var lat_lon = d.key.split(",");
+                if (lat_lon[0] == ""){ lat_lon = [52.655694, 3.913930]}
+                d = new google.maps.LatLng(lat_lon[0], lat_lon[1]);
+//                d = new google.maps.LatLng(d.value.latitude, d.value.longitude);
                 d = projection.fromLatLngToDivPixel(d); 
                 return d3.select(this)
-                    .attr("x", (d.x + 4000) + "px")
-                    .attr("y", (d.y + 4000) + "px");
+                    .attr("x", ((d.x - (size/2)) + 4000) + "px")
+                    .attr("y", ((d.y - (size/2)) + 4000) + "px");
             }
 
             function transformPath(d) {
@@ -195,7 +225,6 @@ function MapViewer(vm){
                 return d3.select(this)
                     .attr("transform", "translate(" + (d.x + 4000) + "," + (d.y + 4000) + ")");
             }
-
 
             var info_click_tip = d3.select("body")
                 .append("div")
@@ -214,23 +243,141 @@ function MapViewer(vm){
                 .style("visibility", "hidden")
                 .text("");
             
+            function updateCollectors(collectors_data){
+//                console.log("collectors_data: " + collectors_data.length);
+
+                var symbol = d3.svg.symbol().type('diamond');
+
+                var collector_marker = collector_layer.selectAll("path")
+                    .data(collectors_data)
+                    .each(transformPath);
+                    
+                collector_marker.enter()
+                    .append("path")
+                    .attr('d', symbol.size(2000))
+                    .attr("stroke","black")
+                    .attr("stroke-width", "1.5px")
+                    .attr("fill", object_colors["collector"])
+                    .on("mouseover", function(d){
+                        d3.select(this)
+                            .transition()
+                            .ease("elastic")
+                            .attr("d", symbol.size(function(d){
+                                return 550 + (d.values.length * 5) + (map.getZoom() * 50);
+                            }))
+                            .style("opacity", 1);
+                        map.setOptions({draggableCursor:'crosshair'});
+                        tooltip.style("visibility", "visible")
+                            .text(d.values[0].administrative_area_level_1 + " - " + d.values[0].locality + ": " + d.values.length);
+                        
+                    })
+                    .on("mouseout", function(d){
+                        var symbol = d3.svg.symbol().type('diamond'); //Need to re-initiate?
+                        d3.select(this)
+                            .transition()
+                            .ease("elastic")
+                            .attr("d", symbol.size(function(d){
+                                    return 20 + (d.values.length * 10) + (map.getZoom() * 50);
+                            }))
+                            .style("opacity", vm.opacity_collectors()); //get the opacity value from the slider again
+                        map.setOptions({draggableCursor:'default'});
+                        tooltip.style("visibility", "hidden");
+                    })
+                    .on("click", function(d){
+                        info_click_tip.style("visibility", "visible")
+                            .style("top", (event.pageY-25)+"px")
+                            .style("left",(event.pageX+10)+"px")
+                            .html(function(){
+                                var return_this = "Vertellers:<br>";
+                                d.values.forEach(function(item){
+                                    return_this += "<a target=\"vb\" href=\"http://www.verhalenbank.nl/items/show/" + item.id + "\">" + item.title + "</a><br>";
+                                })
+                                return return_this;
+                            })
+                        console.log(d);
+                    })
+                    .on("mousemove", function(){
+                        tooltip.style("top", (event.pageY-10)+"px")
+                                    .style("left",(event.pageX+10)+"px");
+                    });
+
+                //Update…
+                collector_marker.transition()
+                    .delay(function(d, i){
+                        return i + Math.sqrt(d.values.length) * 20;
+                    })
+                    .duration(1500)
+                    .attr("d", symbol.size(function(d){
+                        return 20 + (d.values.length * 10) + (map.getZoom() * 50);
+                    }))
+                    .attr("fill", function(d){
+//                        if (vm.bubbles_color_intensity()){
+//                            return d3.rgb(255, 255 - (Math.log(d.values.length) * 150), 155 - (Math.log(d.values.length) * 150));
+//                            return d3.rgb((Math.log(d.values.length) * 100), 255 - (Math.log(d.values.length) * 70), 255);
+//                        }
+                        return object_colors["collector"];
+                    })
+                    .style("opacity", function(){
+                        return vm.opacity_collectors();
+                    })
+                    .style("visibility", function() {
+                        return vm.show_collectors() ? "visible" : "hidden";
+                    });
+                    
+                //exit
+                collector_marker.exit()
+                    .transition()
+                    .duration(1000)
+                    .attr("d", 0)
+                    .attr("opacity", 0)
+                    .remove();
+            }
+            
             function updateCreators(creators_data){
                 
 //                console.log("creators_data: " + creators_data.length);
                 
-                var symbol = d3.svg.symbol().type('triangle-up');
+                var symbol_tri = d3.svg.symbol().type('triangle-down');
                 
                 var creator_marker = creator_layer.selectAll("path")
                     .data(creators_data)
-                    .each(transformPath)
+                    .each(transformPath);
 
                 creator_marker.enter()
                     .append("path")
-                    .each(transformPath)
-                    .attr('d', symbol.size(10))
+                    .attr('d', symbol_tri.size(10))
                     .attr("stroke","black")
                     .attr("stroke-width", "1.5px")
-                    .attr("fill", object_colors["creator"]);
+                    .attr("fill", object_colors["creator"])
+                    .on("mouseover", function(d){
+                        d3.select(this)
+                            .transition()
+                            .ease("elastic")
+                            .attr("d", symbol_tri.size(function(d){
+                                return (d.values.length * 50) + (map.getZoom() * 50);
+                            }))
+                            .style("opacity", 1);
+                        map.setOptions({draggableCursor:'crosshair'});
+                        tooltip.style("visibility", "hidden");
+                    })
+                    .on("mouseout", function(d){
+                        var symbol_tri = d3.svg.symbol().type('triangle-down'); //Need to re-initiate?
+                        d3.select(this)
+                            .transition()
+                            .ease("elastic")
+                            .attr("d", symbol_tri.size(function(d){
+                                    return (d.values.length * 50) + (map.getZoom() * 5);
+                            }))
+                            .style("opacity", vm.opacity_creators()); //get the opacity value from the slider again
+                        map.setOptions({draggableCursor:'default'});
+                        tooltip.style("visibility", "hidden");
+                    })
+                    .on("click", function(d){
+                        // search tales from these creators
+                        console.log(d);
+                    })
+                    .on("mousemove", function(){
+                    });
                 
                 //Update…
                 creator_marker.transition()
@@ -238,8 +385,8 @@ function MapViewer(vm){
                         return i + Math.sqrt(d.values.length) * 20;
                     })
                     .duration(1500)
-                    .attr("d", symbol.size(function(d){
-                            return (d.values.length * (map.getZoom() * 5));
+                    .attr("d", symbol_tri.size(function(d){
+                        return (d.values.length * 50) + (map.getZoom() * 5);
                     }))
                     .attr("fill", function(d){
                         if (vm.bubbles_color_intensity()){
@@ -254,9 +401,17 @@ function MapViewer(vm){
                     .style("visibility", function() {
                         return vm.show_creators() ? "visible" : "hidden";
                     });
+
+                //exit
+                creator_marker.exit()
+                    .transition()
+                    .duration(1000)
+                    .attr("d", 0)
+                    .attr("opacity", 0)
+                    .remove();
             }
             
-            function update(locality_data){
+            function updateLocations(locality_data){
 //                console.log("locality_data: " + locality_data.length);
                 
                 //init locations
@@ -275,7 +430,7 @@ function MapViewer(vm){
                     .attr("stroke","black")
                     .attr("stroke-width","1px")
                     .on("mouseover", function(d){
-                        console.log(d);
+//                        console.log(d);
                         map.setOptions({draggableCursor:'crosshair'});
                         d3.select(this)
                             .transition()
@@ -305,13 +460,14 @@ function MapViewer(vm){
                                     .style("left",(event.pageX+10)+"px");
                     })
                     .on("click", function(d){
+                        console.log(d);
                         info_click_tip.style("visibility", "visible")
                             .style("top", (event.pageY-25)+"px")
                             .style("left",(event.pageX+10)+"px")
                             .html(function(){
                                 var return_this = "Volksverhalen:<br>";
                                 d.values.forEach(function(item){
-                                    return_this += "<a target=\"vb\" href=\"http://www.verhalenbank.nl/items/show/" + item.id + "\">" + item.identifier + "</a><br>";
+                                    return_this += "<a target=\"vb\" href=\"http://www.verhalenbank.nl/items/show/" + item.id + "\">" + item.identifier + " - " + item.title + "</a><br>";
                                 })
                                 return return_this;
                             })
@@ -319,7 +475,6 @@ function MapViewer(vm){
                     .transition()
                     .duration(200)
                     .delay(function(d, i){
-                        console.log(d);
                         return 2000 - Math.sqrt(d.values.length) * 40; //largest first!
 //                        return (i) + Math.sqrt(d.values.length) * 40;
                     })
@@ -362,48 +517,52 @@ function MapViewer(vm){
                     .remove();
             }
             
+            
+            //settings subscriptions
             vm.location_results.subscribe( function (){
                 console.log("redrawing map: location update");
-                update(vm.location_results());
+                updateLocations(vm.location_results());
                 updateCreators(vm.creator_results());
+                updateCollectors(vm.collector_results());
             });
             vm.bubbles_same_size.subscribe( function (){
-                update(vm.location_results());
-//                    updateCreators(vm.creator_results());
+                updateLocations(vm.location_results());
+//                updateCreators(vm.creator_results());
             });
             vm.bubbles_color_intensity.subscribe( function (){
-                update(vm.location_results());
+                updateLocations(vm.location_results());
                 updateCreators(vm.creator_results());
+                updateCollectors(vm.collector_results());
             });
-
+            //opacity subscriptions
             vm.opacity_locations.subscribe( function (){
-                update(vm.location_results());
+                updateLocations(vm.location_results());
             });
             vm.opacity_creators.subscribe( function (){
                 updateCreators(vm.creator_results());
             });
-
+            vm.opacity_collectors.subscribe( function (){
+                updateCollectors(vm.collector_results());
+            });
+            //show subscriptions
             vm.show_locations.subscribe( function (){
-                update(vm.location_results());                        
+                updateLocations(vm.location_results());                        
             });
             vm.show_creators.subscribe( function (){
                 updateCreators(vm.creator_results());
             });
-            
+            vm.show_collectors.subscribe( function (){
+                updateCollectors(vm.collector_results());
+            });
             // Draw each marker as a separate SVG element.
             // We could use a single SVG, but what size would it have?
             // here we keep track of all changes in the viewmodel
             overlay.draw = function() {
-
-                update(vm.location_results());
-                updateCreators(vm.creator_results());                
+                updateLocations(vm.location_results());
+                updateCreators(vm.creator_results());
+                updateCollectors(vm.collector_results());
 
                 //events for zooming
-                google.maps.event.addListener(map, 'zoom_changed', function() {
-//                    update(vm.location_results()); //update only when zooming
-//                    updateCreators(vm.creator_results());
-                    info_click_tip.style("visibility", "hidden");
-                });
                 google.maps.event.addListener(map, 'center_changed', function() {
                     info_click_tip.style("visibility", "hidden");
                 });
