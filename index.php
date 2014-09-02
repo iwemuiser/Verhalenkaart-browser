@@ -139,6 +139,7 @@
         
         <h4>Zoekresultaten</h4>
         De zoekresultaten worden weergegeven in rode bollen. U kunt nog wat spelen met de kleuren, en de bollen allemaal even groot maken, bijvoorbeeld om overlap te voorkomen. Ook kunt u de transparantie veranderen zodat er een soort "heatmap" ontstaat. Door op het checkboxje ervoor te klikken kunt u de resultaten geheel weghalen van de kaart.
+        Items die geen locatie hebben komen naast Nederland in zee terecht.
         <br>
         <br>
         
