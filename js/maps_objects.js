@@ -405,10 +405,10 @@ function MapViewer(vm){
                         return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
                     }))
                     .attr("fill", function(d){
-                        if (vm.bubbles_color_intensity()){
-                            return d3.rgb(255, 255 - (Math.log(d.values.length) * 150), 155 - (Math.log(d.values.length) * 150));
+//                        if (vm.bubbles_color_intensity()){
+//                            return d3.rgb(255 - (Math.log(d.values.length) * 150), 255, 155 - (Math.log(d.values.length) * 150));
 //                            return d3.rgb((Math.log(d.values.length) * 100), 255 - (Math.log(d.values.length) * 70), 255);
-                        }
+//                        }
                         return object_colors["creator"];
                     })
                     .style("opacity", function(){
@@ -456,7 +456,7 @@ function MapViewer(vm){
                             })
                             .style("opacity", 1);
                         tooltip.style("visibility", "visible")
-                            .text(d.values[0].administrative_area_level_1 + " - " + d.values[0].locality + ": " + d.values.length);
+                            .text(d.values[0].country + " - " + d.values[0].administrative_area_level_1 + " - " + d.values[0].locality + ": " + d.values.length);
                     })
                     .on("mouseout", function(d){
                         map.setOptions({draggableCursor:'default'});

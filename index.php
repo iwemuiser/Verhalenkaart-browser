@@ -135,8 +135,11 @@
         
         <input id="hs9" class="input-search" value="date:2001*" style='width:300px'/>
         <button class="search_button" data-bind="click:hs9">Search</button><br>
-        <br>
         
+        <input id="hs11" class="input-search" value="NOT country:* AND latitude:*" style='width:300px'/>
+        <button class="search_button" data-bind="click:hs11">Search</button><br>
+        <br>
+                
         <h4>Zoekresultaten</h4>
         De zoekresultaten worden weergegeven in rode bollen. U kunt nog wat spelen met de kleuren, en de bollen allemaal even groot maken, bijvoorbeeld om overlap te voorkomen. Ook kunt u de transparantie veranderen zodat er een soort "heatmap" ontstaat. Door op het checkboxje ervoor te klikken kunt u de resultaten geheel weghalen van de kaart.
         Items die geen locatie hebben komen naast Nederland in zee terecht.

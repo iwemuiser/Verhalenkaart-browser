@@ -247,7 +247,7 @@ function UpdateLocationData(location_query, vm){
 }
 
 function UpdateCreatorData(creator_query, vm){
-//    console.log("CREATORS:" + creator_query);
+    console.log("CREATORS:" + creator_query);
     $.getJSON(creator_query, function(response) {
 //        var jq_results = vm.creator_results;
         nested_results = d3.nest()
