@@ -29,7 +29,7 @@
         else if (array_key_exists('c', $_GET)) { //creators (story tellers)
             $collection = "collectionid:4";
             $pre_query = replace_spaces_and_cancellations($_GET["q"] . " AND " . $collection);
-            $return_fields = "fl=title,gender,administrative_area_level_1,administrative_area_level_2,locality,longitude,latitude,id";
+            $return_fields = "fl=title,gender,administrative_area_level_1,administrative_area_level_2,locality,longitude,latitude,id,privacy_required";
             $settings = "wt=json&rows=1000000"; //ident=true off for faster results
             $total_query = $config['query_location'] . "?q=" . $pre_query . "&" . $return_fields . "&" . $settings;
         }

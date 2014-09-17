@@ -166,18 +166,7 @@ function MapViewer(vm){
         }
         return nr;
     }
-/*    
-    this.update_data_location = function(location){
-        console.log("updating data from: " + location);
-        d3.json(location, function(json_data){
-            //process data to fit d3
-            locality_data = d3.nest()
-                .key(function(d) { return [n_decimals(d.latitude, 3), n_decimals(d.longitude, 3)]; })
-    //            .key(function(d) { return d.locality; })
-                .entries(json_data.response.docs);
-        });
-    }
-  */  
+
     // Add the container when the overlay is added to the map.
     this.init = function(){
         overlay.onAdd = function() {
@@ -358,7 +347,7 @@ function MapViewer(vm){
                     .append("path")
                     .attr('d', symbol_tri.size(10))
                     .attr("stroke","black")
-                    .attr("stroke-width", "1.5px")
+                    .attr("stroke-width", "1px")
                     .attr("fill", object_colors["creator"])
                     .on("mouseover", function(d){
                         d3.select(this)
@@ -387,8 +376,20 @@ function MapViewer(vm){
                         tooltip.style("visibility", "hidden");
                     })
                     .on("click", function(d){
+                        info_click_tip.style("visibility", "visible")
+                            .style("top", (event.pageY-25)+"px")
+                            .style("left",(event.pageX+10)+"px")
+                            .html(function(){
+                                var return_this = "Vertellers:<br>";
+                                d.values.forEach(function(item){
+                                    var title = "Verteller prive";
+                                    if (item.privacy_required == "nee"){ title = item.title; }
+                                    return_this += "<a target=\"vb\" href=\"http://www.verhalenbank.nl/items/show/" + item.id + "\">" + title + "</a><br>";
+                                })
+                                return return_this;
+                            })
                         // search tales from these creators
-//                        console.log(d);
+                        console.log(d);
                     })
                     .on("mousemove", function(){
                         tooltip.style("top", (event.pageY-10)+"px")
@@ -402,13 +403,20 @@ function MapViewer(vm){
                     })
                     .duration(1500)
                     .attr("d", symbol_tri.size(function(d){
+                        if (vm.bubbles_same_size()){
+                            return (map.getZoom() * 5) + 60;
+                        }
                         return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
+//                        return (Math.sqrt(d.values.length) * bubble_sizes_multiplier) + map.getZoom(); //sqrt so circles don't get too large
                     }))
+                        
+//                        return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
+//                    }))
                     .attr("fill", function(d){
-//                        if (vm.bubbles_color_intensity()){
+                        if (vm.bubbles_color_intensity()){
 //                            return d3.rgb(255 - (Math.log(d.values.length) * 150), 255, 155 - (Math.log(d.values.length) * 150));
-//                            return d3.rgb((Math.log(d.values.length) * 100), 255 - (Math.log(d.values.length) * 70), 255);
-//                        }
+                            return d3.rgb((Math.log(d.values.length) * 100), 255 - (Math.log(d.values.length) * 70), 255 - (Math.log(d.values.length) * 70));
+                        }
                         return object_colors["creator"];
                     })
                     .style("opacity", function(){
@@ -543,7 +551,7 @@ function MapViewer(vm){
             });
             vm.bubbles_same_size.subscribe( function (){
                 updateLocations(vm.location_results());
-//                updateCreators(vm.creator_results());
+                updateCreators(vm.creator_results());
             });
             vm.bubbles_color_intensity.subscribe( function (){
                 updateLocations(vm.location_results());
