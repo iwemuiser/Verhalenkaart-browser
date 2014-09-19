@@ -15,7 +15,6 @@ window.onload = function () {
     waitman.init();
 
     vm.doSearch();
-    
 }
 
 var show_info_windows = true;
@@ -66,6 +65,7 @@ var initial_facet_query = initial_location_query;
 var search_query = location_proxy + initial_location_query;
 
 function ViewModel() {
+    
     var self = this;
     
     self.waiting = ko.observable(waiting);
@@ -120,7 +120,6 @@ function ViewModel() {
     self.doFacetRetrieve = function(){
         self.location_query = proxy + self.initial_facet_query();
     }
-
     
     //helpsearches
     self.hs1 = function (hq) {
@@ -174,24 +173,30 @@ function ViewModel() {
 
     self.doSearch = function () {
         if (self.location_query() == ""){
-//            console.log("replacing empty query");
             self.location_query("*:*");
         }
         if (self.show_locations()){
-            UpdateLocationData(location_proxy + self.location_query(), self);
+            setTimeout(function(){ //easy now!
+                UpdateLocationData(location_proxy + self.location_query(), self);
+            },10);
         }
         if (self.show_collectors){
-            UpdateCollectorData(collector_proxy + self.collector_query(), self);
+            setTimeout(function(){
+                UpdateCollectorData(collector_proxy + self.collector_query(), self);
+            },20);
         }
         if (self.show_creators){
-            UpdateCreatorData(creator_proxy + self.creator_query(), self);
+            setTimeout(function(){
+                UpdateCreatorData(creator_proxy + self.creator_query(), self);
+            },30);
         }
-        if (self.load_named_entities){
+        if (self.load_named_entities){ //the future comes soon
+            setTimeout(function(){
 //            UpdateNEData(location_proxy + self.ne_query(), self);
+            },40);
         }
 //        UpdateLocationData(location_proxy + self.location_query(), self);
         UpdateFacetData(facet_proxy + self.location_query() + facet_addition, self);
-        
     }
 
     self.emptySearchbox = function(){
@@ -243,7 +248,7 @@ function UpdateLocationData(location_query, vm){
         nested_results = d3.nest()
             .key(function(d) { return [d.latitude, d.longitude]; })
             .entries(response.response.docs);
-        vm.location_results(nested_results); //<-- :) holy hell, that's it?
+        vm.location_results(nested_results);
         vm.location_results.valueHasMutated();
         vm.waiting(false);
         vm.waiting.valueHasMutated();
@@ -257,7 +262,7 @@ function UpdateCreatorData(creator_query, vm){
         nested_results = d3.nest()
             .key(function(d) { return [d.latitude, d.longitude]; })
             .entries(response.response.docs);
-        vm.creator_results(nested_results); //<-- :) holy hell, that's it?
+        vm.creator_results(nested_results);
         vm.creator_results.valueHasMutated();
     });
 }
@@ -270,7 +275,7 @@ function UpdateCollectorData(collector_query, vm){
         nested_results = d3.nest()
             .key(function(d) { return [d.latitude, d.longitude]; })
             .entries(response.response.docs);
-        vm.collector_results(nested_results); //<-- :) holy hell, that's it?
+        vm.collector_results(nested_results);
         vm.collector_results.valueHasMutated();
     });
 }

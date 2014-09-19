@@ -560,12 +560,22 @@ function MapViewer(vm){
             }
             
             //settings subscriptions
+            //data subscriptions
             vm.location_results.subscribe( function (){
-//                console.log("redrawing map: location update");
                 updateLocations(vm.location_results());
-                updateCreators(vm.creator_results());
-                updateCollectors(vm.collector_results());
+//                updateCreators(vm.creator_results());
+//                updateCollectors(vm.collector_results());
             });
+            vm.creator_results.subscribe( function (){
+//                updateLocations(vm.location_results());
+                updateCreators(vm.creator_results());
+//                updateCollectors(vm.collector_results());
+            });
+            vm.collector_results.subscribe( function (){
+//                updateLocations(vm.location_results());
+//                updateCreators(vm.creator_results());
+                updateCollectors(vm.collector_results());
+            });            
             vm.bubbles_same_size.subscribe( function (){
                 updateLocations(vm.location_results());
                 updateCreators(vm.creator_results());
@@ -603,6 +613,7 @@ function MapViewer(vm){
             // We could use a single SVG, but what size would it have?
             // here we keep track of all changes in the viewmodel
             overlay.draw = function() {
+                
                 updateLocations(vm.location_results());
                 updateCreators(vm.creator_results());
                 updateCollectors(vm.collector_results());
