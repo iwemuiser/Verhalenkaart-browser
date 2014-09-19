@@ -541,6 +541,23 @@ function MapViewer(vm){
                     .remove();
             }
             
+            function cloudViewing(cloud_view){
+                if (cloud_view){
+                    d3.selectAll(".location")
+                        .transition()
+                        .duration(2000)
+                        .attr("cx", function(d,i){
+                            return ((i*4) + 4300) + "px" ;
+                        })
+                        .attr("cy",  function(d,i){
+                            return ((Math.random() * 100) + 4200) + "px" ;
+                        });
+                        
+                }
+                else{
+                    updateLocations(vm.location_results());
+                }
+            }
             
             //settings subscriptions
             vm.location_results.subscribe( function (){
@@ -577,6 +594,10 @@ function MapViewer(vm){
             });
             vm.show_collectors.subscribe( function (){
                 updateCollectors(vm.collector_results());
+            });
+            vm.cloud_view.subscribe( function(){
+                console.log("Clouding!");
+                cloudViewing(vm.cloud_view());
             });
             // Draw each marker as a separate SVG element.
             // We could use a single SVG, but what size would it have?

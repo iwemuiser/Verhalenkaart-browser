@@ -1,31 +1,33 @@
 function TimelineViewer(vm){
     this.init = function(){
-//        console.log("timeline viewer init");
         vm.location_results.subscribe( function (){
 //            console.log("timeline data updated");
-//            console.log(vm.location_results());
             d3.selectAll("#timeWindow").selectAll("svg").remove(); // resetting the information screen
-//            vm.location_results().forEach(function(d){
-//            console.log(d);
-            drawTimeline( "Verhalen timeline", vm.location_results(), "#timeWindow", "", 10, 800, 200, vm);
-//                drawTimeline(d.key, d.value, "#pie_chart_2 .chart", colors, 10, 100, 20, 1, vm);
-//            });
+            drawTimeline( "Verhalen timeline", vm.location_results(), "#timeWindow", "", 800, 200, vm);
         });
     }
 }
 
 
-function drawTimeline(timelineName, in_data, selectString, colors, margin, widthOrg, heightOrg, vm){
+function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, heightOrg, vm){
     
     var format_date_classic = d3.time.format("%Y-%m-%d");
     //console.log(format_date(new Date(2011, 0, 1))); // returns a string
 
-    var margin = {top: 10, right: 10, bottom: 70, left: 40},
-        margin2 = {top: heightOrg-50, right: 10, bottom: 20, left: 40},
-        width = widthOrg - margin.left - margin.right,
-        height = heightOrg - margin.top - margin.bottom,
-        height2 = heightOrg - margin2.top - margin2.bottom;
+    var top_graph_percentage = 0.75;
+    var between_space = 20;
+    
+    var main_margin = {top: 0, bottom: 20, right: 10, left: 60};
+    var main_height = heightOrg - main_margin.top - main_margin.bottom;
+    
+    var top_height = main_height * top_graph_percentage; //height of upper
+    var top_margin = {top: main_margin.top, bottom: top_height, right: main_margin.right, left: main_margin.left};
+    
+    var bottom_height = main_height * (1-top_graph_percentage) - between_space;
+    var bottom_margin = {top: top_height + top_margin.top + between_space, bottom: main_margin.bottom, right: main_margin.right, left: main_margin.left};
 
+    var main_width = widthOrg - main_margin.left - main_margin.right;
+    
     var parseDate = [d3.time.format("%Y-%m-%d %Y-%m-%d").parse,
                     d3.time.format("%Y-%m-%d").parse,
                     d3.time.format("%b %Y").parse];
@@ -34,6 +36,7 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
     //var parseDate = d3.time.format("%b %Y").parse;
 
 //    console.log(data)
+    var q = 0;
     
     dates = all_dates(in_data);
     //assign counts to unique dates
@@ -44,13 +47,18 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
     data.forEach(function(d) { d.key = parseThisDate(d.key); }, this);
     //order datums by time
     data = data.sort(function(a, b) { return a.key - b.key; });
-    
+    //addition of data to make rising line
+    data.forEach(function(d) { 
+        q = q + d.value;
+        d.value = q; }, this);
 //    console.log(data)
 
-    var x = d3.time.scale().range([0, width]), //upper timeline
-        x2 = d3.time.scale().range([0, width]), //lower timeline
-        y = d3.scale.sqrt().range([height, 0]),
-        y2 = d3.scale.pow().exponent(.2).range([height2, 0]);
+    var x = d3.time.scale().range([0, main_width]), //upper timeline
+        x2 = d3.time.scale().range([0, main_width]), //lower timeline
+//        y = d3.scale.sqrt().range([height, 0]), //upper timeline
+        y = d3.scale.pow().range([top_height, 40]), //upper timeline
+        scaley = d3.scale.pow().range([top_height, 0]), //upper timeline
+        y2 = d3.scale.pow().exponent(.5).range([bottom_height, 0]); //lower timeline
 
     var xAxis = d3.svg.axis().scale(x).orient("bottom"),
         xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
@@ -70,44 +78,45 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
         .x(x2)
         .on("brush", brushed);
 
-    var area = d3.svg.area()
+    var top_area = d3.svg.area()
         .interpolate("step-after") //shape of the curve!
         .x(function(d) { return x(d.key); })
-        .y0(height)
-        .y1(function(d) { return y(d.value*1.5); });
+        .y0(top_height)
+        .y1(function(d) { return y(d.value); });
 
-    var area2 = d3.svg.area()
+    var bottom_area = d3.svg.area()
         .interpolate("step-after") //shape of the curve!
         .x(function(d) { return x2(d.key); })
-        .y0(height2)
+        .y0(bottom_height)
         .y1(function(d) { return y2(d.value); });
 
 //    var svg = d3.select("body").append("svg")
     var svg = d3.select(selectString)
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
+        .attr("width", widthOrg)
+        .attr("height", heightOrg);
 //        .call(zoom);
 
     svg.append("defs").append("clipPath")
         .attr("id", "clip")
         .append("rect")
-        .attr("width", width)
-        .attr("height", height);
+        .attr("width", main_width)
+        .attr("height", main_height);
 
     var focus = svg.append("g")
         .attr("class", "focus")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + top_margin.left + "," + top_margin.top + ")");
 
     var context = svg.append("g")
         .attr("class", "context")
-        .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+        .attr("transform", "translate(" + bottom_margin.left + "," + bottom_margin.top + ")");
 
     var title = svg.append("text") //add a title to the circle's center
         .attr("x", 56)
         .attr("y", 24)
         .style("font-size", "16px") 
         .style("font-weight", "bold")
+        .style("position","inline")
         .text(timelineName);
 
     //extract the dates
@@ -119,11 +128,11 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
     focus.append("path")
       .datum(data)
       .attr("class", "area")
-      .attr("d", area);
+      .attr("d", top_area);
 
     focus.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0," + top_height + ")")
       .call(xAxis);
 
     focus.append("g")
@@ -135,16 +144,16 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
         .call(detail_brush)
         .selectAll("rect")
         .attr("y", -6)
-        .attr("height", height + 7);
+        .attr("height", top_height + 7);
 
     context.append("path")
       .datum(data)
       .attr("class", "area")
-      .attr("d", area2);
+      .attr("d", bottom_area);
 
     context.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height2 + ")")
+      .attr("transform", "translate(0," + bottom_height + ")")
       .call(xAxis2);
 
     context.append("g")
@@ -152,12 +161,12 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
       .call(brush)
       .selectAll("rect")
       .attr("y", -6)
-      .attr("height", height2 + 7);
+      .attr("height", bottom_height + 7);
 
     function brushed() {
 //        console.log(brush.extent());
         x.domain(brush.empty() ? x2.domain() : brush.extent());
-        focus.select(".area").attr("d", area);
+        focus.select(".area").attr("d", top_area);
         focus.select(".x.axis").call(xAxis);
     }
     
@@ -169,7 +178,7 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
         focus.select(".area")
             .transition()
             .duration(1000)
-            .attr("d", area);
+            .attr("d", top_area);
         focus.select(".x.axis").call(xAxis);
         focus.call(detail_brush.clear());
         detail_brush.clear();
@@ -178,14 +187,8 @@ function drawTimeline(timelineName, in_data, selectString, colors, margin, width
     function detail_brushed() {
 //        console.log(detail_brush.extent());
         x.domain(detail_brush.empty() ? x2.domain() : detail_brush.extent());
-        focus.select(".area").attr("d", area);
+        focus.select(".area").attr("d", top_area);
         focus.select(".x.axis").call(xAxis);
-    }
-
-    function type(d) {
-      d.key = parseThisDate(d.key);
-      d.value = +d.value;
-      return d;
     }
 
     function parseThisDate(date){

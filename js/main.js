@@ -41,6 +41,8 @@ var show_creators = true;
 var show_collectors_locations = false;
 var show_collectors_creators = false;
 
+var cloud_view = false;
+
 var location_proxy = 'data_proxy.php?l&q='
 var creator_proxy = 'data_proxy.php?c&q='
 var collector_proxy = 'data_proxy.php?o&q='
@@ -90,6 +92,8 @@ function ViewModel() {
     //lines / connections
     self.show_collectors_locations = ko.observable(show_collectors_locations);
     self.show_collectors_creators = ko.observable(show_collectors_creators);
+    
+    self.cloud_view = ko.observable(cloud_view);
     
     self.show_facets = ko.observableArray(show_facets);
     

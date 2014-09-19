@@ -71,7 +71,7 @@
                 <input type="checkbox" name="show_info_windows" data-bind="checked: show_info_windows">Facetten<br>
                 <input type="checkbox" name="bubbles_same_size" data-bind="checked: bubbles_same_size">Zelfde grootte<br>
                 <input type="checkbox" name="bubbles_color_intensity" data-bind="checked: bubbles_color_intensity">Op kleur<br>
-                <input type="checkbox" name="item_cloud">Cloud<br>
+                <input type="checkbox" name="item_cloud" data-bind="checked: cloud_view">Cloud (experim.)<br>
             </form>
         </div>
     </div>
