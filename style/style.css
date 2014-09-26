@@ -18,8 +18,8 @@ h1,h2,h3,h4{
 }
 .toplayer{
     border-style:ridge;
-    border-width:4px;
-    border-color:lightblue;
+    border-width:1px;
+    border-color:black;
 }
 
 #viewControl {
@@ -300,13 +300,23 @@ div.about{
 }
 
 div.click_tip{
-    border: 2px;
+/*    -moz-border-radius-topleft: 5px 50px;*/
+    -moz-border-radius-bottomleft: 15px 50px;
+    -moz-border-radius-topright: 15px 50px;
+    -moz-border-radius-bottomright: 15px 50px;
+/*    border-top-left-radius: 5px 50px;*/
+    border-bottom-left-radius: 15px 50px;
+    border-top-right-radius: 15px 50px;
+    border-bottom-right-radius: 15px 50px;
+/*    border: 2px;
     border-color: lightblue;
-    border-style: ridge;
+    border-style: ridge;*/
+    background: #444;
+    opacity: 0.94;
     padding: 4px;
     overflow: hidden;
     overflow-y: scroll;
     height: 200px;
     position: absolute;
-    background: rgba(0,0,0,0.8);
+/*    background: rgba(220,220,0,0.8);*/
 }

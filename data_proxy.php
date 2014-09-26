@@ -19,10 +19,18 @@
     $total_query = "";
     
     if (array_key_exists('q', $_GET)) {
+        if (array_key_exists('ne', $_GET)) { //location
+            $collection = "collectionid:201";
+            $pre_query = replace_spaces_and_cancellations($_GET["q"] . " AND " . $collection);
+            $return_fields = "fl=title,country,administrative_area_level_1,administrative_area_level_2,locality,longitude,latitude,id,identifier";
+            $settings = "wt=json&rows=1000000";
+            $total_query = $config['query_location'] . "?q=" . $pre_query . "&" . $return_fields . "&" . $settings;
+//            print $total_query;
+        }
         if (array_key_exists('l', $_GET)) { //location
             $collection = "collectionid:1";
             $pre_query = replace_spaces_and_cancellations($_GET["q"] . " AND " . $collection);
-            $return_fields = "fl=title,country,administrative_area_level_1,administrative_area_level_2,locality,longitude,latitude,id,date,identifier,collectionid";
+            $return_fields = "fl=title,country,administrative_area_level_1,administrative_area_level_2,locality,longitude,latitude,id,date,identifier";//",collectionid";
             $settings = "wt=json&rows=1000000";
             $total_query = $config['query_location'] . "?q=" . $pre_query . "&" . $return_fields . "&" . $settings;
         }

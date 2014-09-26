@@ -30,12 +30,14 @@ var opacity_counties = 0;
 var opacity_locations = 0.65;
 var opacity_collectors = 0.65;
 var opacity_creators = 0.65;
+var opacity_ne_locations = 0.65;
 
 var show_provinces = false;
 var show_counties = false;
 var show_locations = true;
 var show_collectors = true;
 var show_creators = true;
+var show_ne_locations = false;
 
 var show_collectors_locations = false;
 var show_collectors_creators = false;
@@ -45,6 +47,7 @@ var cloud_view = false;
 var location_proxy = 'data_proxy.php?l&q='
 var creator_proxy = 'data_proxy.php?c&q='
 var collector_proxy = 'data_proxy.php?o&q='
+var ne_location_proxy = 'data_proxy.php?ne&q='
 
 var facet_proxy = 'data_proxy.php?f&q='
 
@@ -60,6 +63,7 @@ var waiting = true;
 var initial_location_query = "subgenre:sprookje";
 var initial_creator_query = "*:*";
 var initial_collector_query = "*:*";
+var initial_ne_location_query = "*:*";
 var initial_facet_query = initial_location_query;
 
 var search_query = location_proxy + initial_location_query;
@@ -82,6 +86,7 @@ function ViewModel() {
     self.opacity_counties = ko.observable(opacity_counties);
     self.opacity_collectors = ko.observable(opacity_collectors);
     self.opacity_creators = ko.observable(opacity_creators);
+    self.opacity_ne_locations = ko.observable(opacity_ne_locations);
 
     //checkboxes for showing objects
     self.show_provinces = ko.observable(show_provinces);
@@ -89,6 +94,8 @@ function ViewModel() {
     self.show_locations = ko.observable(show_locations);
     self.show_collectors = ko.observable(show_collectors);
     self.show_creators = ko.observable(show_creators);
+    self.show_ne_locations = ko.observable(show_ne_locations);
+        
     //lines / connections
     self.show_collectors_locations = ko.observable(show_collectors_locations);
     self.show_collectors_creators = ko.observable(show_collectors_creators);
@@ -102,6 +109,7 @@ function ViewModel() {
     self.location_results = ko.observableArray([]);
     self.creator_results = ko.observableArray([]);
     self.collector_results = ko.observableArray([]);
+    self.ne_location_results = ko.observableArray([]);
 
     //keeping track of selected objects
     self.selected_location = ko.observableArray([]);
@@ -109,11 +117,13 @@ function ViewModel() {
     self.selected_county = ko.observableArray([]);
     self.selected_collector = ko.observableArray([]);
     self.selected_creator = ko.observableArray([]);
+    self.selected_ne_location = ko.observableArray([]);
     
     self.location_query = ko.observable(initial_location_query);
     self.creator_query = ko.observable(initial_creator_query);
     self.collector_query = ko.observable(initial_collector_query);
     self.facet_query = ko.observable(initial_facet_query);
+    self.ne_location_query = ko.observable(initial_ne_location_query);
     
     self.current_query = ko.observable("");
     
@@ -190,9 +200,9 @@ function ViewModel() {
                 UpdateCreatorData(creator_proxy + self.creator_query(), self);
             },30);
         }
-        if (self.load_named_entities){ //the future comes soon
+        if (self.show_ne_locations){ //the future comes soon
             setTimeout(function(){
-//            UpdateNEData(location_proxy + self.ne_query(), self);
+                UpdateNELocationData(ne_location_proxy + self.ne_location_query(), self);
             },40);
         }
 //        UpdateLocationData(location_proxy + self.location_query(), self);
@@ -236,6 +246,23 @@ function UpdateFacetData(facet_query, vm){
         formatted_response = d3_format_facets(response.facet_counts.facet_fields);
         vm.facets_results(formatted_response);
         vm.facets_results.valueHasMutated();
+    });
+}
+
+
+function UpdateNELocationData(ne_location_query, vm){
+    console.log("NE LOCATION:" + ne_location_query);
+    vm.waiting(true);
+    vm.waiting.valueHasMutated();
+    $.getJSON(ne_location_query, function(response) {
+//        var jq_results = vm.location_results;
+        nested_results = d3.nest()
+            .key(function(d) { return [d.latitude, d.longitude]; })
+            .entries(response.response.docs);
+        vm.ne_location_results(nested_results);
+        vm.ne_location_results.valueHasMutated();
+        vm.waiting(false);
+        vm.waiting.valueHasMutated();
     });
 }
 

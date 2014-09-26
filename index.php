@@ -39,16 +39,21 @@
                 <input type="checkbox" name="show_collectors" data-bind="checked: show_collectors">
                 <input type="range" name="opacity_collectors" min="0" max="1" step="0.1" data-bind="value: opacity_collectors"> 
                 <svg height="10" width="10">
-                  <rect x="1" y="1" width="8" height="8" stroke="black" stroke-width="1" fill="blue" />
+                  <polygon fill="blue" stroke="black" stroke-width="1" points="5,0 10,5 5,10 0,5 5,0" />
                 </svg>
                 Verzamelaars <br>
                 <input type="checkbox" name="show_creators" data-bind="checked: show_creators">
                 <input type="range" name="opacity_creators" min="0" max="1" step="0.05" data-bind="value: opacity_creators"> 
                 <svg height="10" width="10">
-                    <polygon fill="lime" stroke="green" stroke-width="1" 
-                                points="4,0 8,8 0,8 4,0" />
+                    <polygon fill="lime" stroke="green" stroke-width="1" points="4,8 8,0 0,0 4,8" />
                 </svg>
                 Vertellers <br>
+                <input type="checkbox" name="show_ne_locations" data-bind="checked: show_ne_locations">
+                <input type="range" name="opacity_ne_locations" min="0" max="1" step="0.05" data-bind="value: opacity_ne_locations"> 
+                <svg height="10" width="10">
+                    <ellipse cx="5" cy="5" rx="5" ry="3" style="fill:yellow;stroke:purple;stroke-width:1" />
+                </svg>
+                Genoemde locaties <br>
             </form>
 <!--            <form>
                 <input type="checkbox" name="lines">
