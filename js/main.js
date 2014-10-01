@@ -34,6 +34,7 @@ var opacity_ne_locations = 0.65;
 
 var show_provinces = false;
 var show_counties = false;
+
 var show_locations = true;
 var show_collectors = true;
 var show_creators = true;
@@ -51,7 +52,7 @@ var ne_location_proxy = 'data_proxy.php?ne&q='
 
 var facet_proxy = 'data_proxy.php?f&q='
 
-var show_facets = ["subgenre", "type", "language", "tags", "collector", "creator", "subject", "literary", "extreme", "text_length_group"]
+var show_facets = ["subgenre", "type", "language", "tags", "collector", "creator", "subject", "literary", "extreme", "text_length_group", "named_entity"]
 var facet_addition = "&facet=true&facet.mincount=1&wt=json&rows=0&facet.field=" + show_facets.join("&facet.field=")
 
 var province_coordinate_data = "http://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wfs?service=WFS&version=2.0.0&request=GetFeature&outputformat=json&typename=provincies"
@@ -179,6 +180,11 @@ function ViewModel() {
     self.hs12 = function (hq) {
         self.location_query($("#hs12").val());
         self.doSearch();
+    }
+
+
+    self.doLocationSearch = function(){
+        UpdateLocationData(location_proxy + self.location_query(), self);
     }
 
     self.doSearch = function () {

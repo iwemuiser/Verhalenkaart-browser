@@ -48,6 +48,8 @@ function WaitViewer(vm){
 }
 
 
+
+
 function MapViewer(vm){
     
     d3.select("waitWindow").style("visibility", "hidden");
@@ -196,9 +198,35 @@ function MapViewer(vm){
 
                 
             // drop this into global scope
-            chor=locatie_layer;
+//            chor=locatie_layer;
 
             var projection = this.getProjection(), padding = 10;
+
+            function CalculateStarPoints(arms, multiplier, d){
+//                console.log(d);
+                outerRadius = ((Math.log(d.values.length) * 2 ) + map.getZoom() + 2);
+                innerRadius = ((Math.log(d.values.length /2 ) * 2 ) + map.getZoom() - 2);
+
+                var results = "";
+                var angle = Math.PI / arms;
+
+                for (var i = 0; i < 2 * arms; i++)
+                {
+                    // Use outer or inner radius depending on what iteration we are in.
+                    var r = (i & 1) == 0 ? outerRadius : innerRadius;
+                    var currX = Math.cos(i * angle) * r;
+                    var currY = Math.sin(i * angle) * r;
+                    // Our first time we simply append the coordinates, subsequet times
+                    // we append a ", " to distinguish each coordinate pair.
+                    if (i == 0){
+                        results = currX + "," + currY;
+                    }
+                    else{ 
+                        results += ", " + currX + "," + currY;
+                    }
+                }
+                return results;
+            }
 
             function transform2(d) {
                 var lat_lon = d.key.split(",");
@@ -550,30 +578,27 @@ function MapViewer(vm){
             function updateNELocations(ne_locality_data){
 //                console.log("locality_data: " + locality_data.length);
 
-                //init locations
-                var ne_locality_marker = ne_locatie_layer.selectAll("ellipse")
+                var ne_locality_marker = ne_locatie_layer.selectAll("polygon")
                     .data(ne_locality_data)
-                    .each(transform2);
-
+                    .each(transformPath);
+                
                 //location enter
                 ne_locality_marker.enter()
-                    .append("ellipse")
-                    .each(transform2)
-                    .attr("class", "location")
-                    .attr("rx", 5)
-                    .attr("ry", 5)
+                    .append("polygon")
+                    .attr("points", function(d){ return CalculateStarPoints(5, 1, d); })
+                    .attr("class", "ne_location")
                     .attr("fill", object_colors["ne_locality"])
+                    .style("opacity", vm.opacity_ne_locations())
                     .attr("stroke","black")
-                    .attr("stroke-width","1px")
+                    .attr("stroke-width","1.2px")
                     .on("mouseover", function(d){
 //                        console.log(d);
                         map.setOptions({draggableCursor:'crosshair'});
                         d3.select(this)
                             .transition()
+                            .duration(1500)
                             .ease("elastic")
-                            .attr("r", function(d){
-                                return Math.sqrt(d.values.length) + 25;
-                            })
+                            .attr("points", function(d){ return CalculateStarPoints(12, 1, d); })
                             .style("opacity", 1);
                         tooltip.style("visibility", "visible")
                             .text(d.values[0].country + " - " + d.values[0].administrative_area_level_1 + " - " + d.values[0].locality + ": " + d.values.length);
@@ -582,13 +607,10 @@ function MapViewer(vm){
                         map.setOptions({draggableCursor:'default'});
                         d3.select(this)
                             .transition()
-                            .attr("r", function(d){
-                                if (vm.bubbles_same_size()){
-                                    return map.getZoom() + 1;
-                                }
-                                return (Math.sqrt(d.values.length) * bubble_sizes_multiplier) + map.getZoom(); //sqrt so circles don't get too large
-                            })
-                            .style("opacity", vm.opacity_locations()); //get the opacity value from the slider again
+                            .duration(1500)
+                            .ease("elastic")
+                            .attr("points", function(d){ return CalculateStarPoints(5, 1, d); })
+                            .style("opacity", vm.opacity_ne_locations()); //get the opacity value from the slider again
                         tooltip.style("visibility", "hidden");
                     })
                     .on("mousemove", function(){
@@ -601,19 +623,28 @@ function MapViewer(vm){
                             .style("top", (event.pageY-25)+"px")
                             .style("left",(event.pageX+10)+"px")
                             .html(function(){
-                                var return_this = "Volksverhalen (" +  + d.values.length + "):<br>";
+                                var return_this = "<font size='1'>";
+                                return_this += incidentList(d.values[0]);
+                                return_this += "</font><br>";
+                                return_this += "Volksverhalen (" +  + d.values.length + "):<br>";
                                 d.values.forEach(function(item){
                                     return_this += "<a target=\"vb\" href=\"http://www.verhalenbank.nl/items/show/" + item.id + "\">" + item.identifier + " - " + item.title + "</a><br>";
-                                })
+                                });
                                 return return_this;
                             })
-                    })
-                    .transition()
-                    .duration(200)
-                    .delay(function(d, i){
-                        return 2000 - Math.sqrt(d.values.length) * 40; //largest first!
-//                        return (i) + Math.sqrt(d.values.length) * 40;
                     });
+
+
+                function incidentList(qwert){
+                    console.log(qwert);
+                    var full_list = ""
+                    for(x in qwert){
+                        console.log(x + ": " + qwert[x] + '<br>');
+                        full_list += x + ": " + qwert[x] + '<br>';
+                    }
+                    return full_list;
+//                  $("#container").text(full_list);
+                }
 
                 //Update…
                 ne_locality_marker.transition()
@@ -621,18 +652,7 @@ function MapViewer(vm){
                         return i + Math.sqrt(d.values.length) * 20;
                     })
                     .duration(500)
-                    .attr("rx", function(d){
-                        if (vm.bubbles_same_size()){
-                            return map.getZoom() + 4;
-                        }
-                        return (Math.sqrt(d.values.length) * bubble_sizes_multiplier) + map.getZoom(); //sqrt so circles don't get too large
-                    })
-                    .attr("ry", function(d){
-                        if (vm.bubbles_same_size()){
-                            return map.getZoom()/2;
-                        }
-                        return ((Math.sqrt(d.values.length) * bubble_sizes_multiplier) + map.getZoom()) / 2; //sqrt so circles don't get too large
-                    })
+//                    .attr("points", function(d){ return CalculateStarPoints(5, d); })
                     .style("opacity", vm.opacity_ne_locations())
                     .style("visibility", function() {
                                     return vm.show_ne_locations() ? "visible" : "hidden";
@@ -640,7 +660,7 @@ function MapViewer(vm){
                     .attr("fill", function(d){
                         if (vm.bubbles_color_intensity()){
 //                                return d3.rgb((Math.log(d.values.length) * 35), 0, 0);
-                                return d3.rgb(255, 255 - (Math.log(d.values.length) * 35), 155 - (Math.log(d.values.length) * 35));
+                                return d3.rgb(255, 255 - (Math.log(d.values.length) * 35), 65 - (Math.log(d.values.length) * 35));
 //                                return d3.rgb((Math.log(d.values.length) * 35), 155 - (Math.log(d.values.length) * 35), 155 - (Math.log(d.values.length) * 35));
                         }
                         return object_colors["ne_locality"];
@@ -721,7 +741,8 @@ function MapViewer(vm){
             });
             //show subscriptions
             vm.show_locations.subscribe( function (){
-                updateLocations(vm.location_results());                        
+                vm.doLocationSearch() //more data expensive
+//                updateLocations(vm.location_results());   
             });
             vm.show_creators.subscribe( function (){
                 updateCreators(vm.creator_results());

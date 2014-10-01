@@ -17,7 +17,7 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
     var top_graph_percentage = 0.75;
     var between_space = 20;
     
-    var main_margin = {top: 0, bottom: 20, right: 10, left: 60};
+    var main_margin = {top: 0, bottom: 0, right: 60, left: 10};
     var main_height = heightOrg - main_margin.top - main_margin.bottom;
     
     var top_height = main_height * top_graph_percentage; //height of upper
@@ -58,11 +58,18 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
 //        y = d3.scale.sqrt().range([height, 0]), //upper timeline
         y = d3.scale.pow().range([top_height, 40]), //upper timeline
         scaley = d3.scale.pow().range([top_height, 0]), //upper timeline
-        y2 = d3.scale.pow().exponent(.5).range([bottom_height, 0]); //lower timeline
+        y2 = d3.scale.pow().range([bottom_height, 0]); //lower timeline
 
-    var xAxis = d3.svg.axis().scale(x).orient("bottom"),
-        xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
-        yAxis = d3.svg.axis().scale(y).orient("left");
+    var xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom");
+    var xAxis2 = d3.svg.axis()
+                    .scale(x2);
+    var yAxis = d3.svg.axis()
+                    .scale(y)
+                    .tickSize(main_width)
+                    .ticks(7)
+                    .orient("right");
 
 //    var zoom = d3.behavior.zoom()
 //        .x(x)
@@ -70,8 +77,8 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
 
     var detail_brush = d3.svg.brush()
         .x(x)
-        .on("brush", brushmove)
-        .on("brushend", brushend);
+        .on("brush", brushmove);
+//        .on("brushend", brushend);
 //        .on("brush", detail_brushed);
 
     var brush = d3.svg.brush()
@@ -112,11 +119,11 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
         .attr("transform", "translate(" + bottom_margin.left + "," + bottom_margin.top + ")");
 
     var title = svg.append("text") //add a title to the circle's center
-        .attr("x", 56)
+        .attr("x", 10)
         .attr("y", 24)
         .style("font-size", "16px") 
         .style("font-weight", "bold")
-        .style("position","inline")
+        .style("position","relative")
         .text(timelineName);
 
     //extract the dates
@@ -124,11 +131,6 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
     y.domain([0, d3.max(data.map(function(d) { return d.value; }))]);
     x2.domain(x.domain());
     y2.domain(y.domain());
-
-    focus.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", top_area);
 
     focus.append("g")
       .attr("class", "x axis")
@@ -139,22 +141,28 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
         .attr("class", "y axis")
         .call(yAxis);
 
+    focus.selectAll("g").filter(function(d) { return d; })
+        .classed("minor", true);
+
+    focus.selectAll("text")
+        .attr("x", 4);
+
     focus.append("g")
         .attr("class", "x brush")
-        .call(detail_brush)
+//        .call(detail_brush)
         .selectAll("rect")
         .attr("y", -6)
         .attr("height", top_height + 7);
-
-    context.append("path")
-      .datum(data)
-      .attr("class", "area")
-      .attr("d", bottom_area);
 
     context.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + bottom_height + ")")
       .call(xAxis2);
+
+    context.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", bottom_area);
 
     context.append("g")
       .attr("class", "x brush")
@@ -162,6 +170,12 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
       .selectAll("rect")
       .attr("y", -6)
       .attr("height", bottom_height + 7);
+
+      focus.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", top_area);
+
 
     function brushed() {
 //        console.log(brush.extent());

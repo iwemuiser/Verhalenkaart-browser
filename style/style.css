@@ -320,3 +320,8 @@ div.click_tip{
     position: absolute;
 /*    background: rgba(220,220,0,0.8);*/
 }
+
+.axis .minor line {
+  stroke: #777;
+  stroke-dasharray: 5,2;
+}
