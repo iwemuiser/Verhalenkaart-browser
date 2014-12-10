@@ -82,7 +82,7 @@
             
             <h3>Gebruikshulp</h3>
             <div class="control">
-                <div class="conrol" style="direction: ltr; padding: 3px;">
+                <div class="control" style="direction: ltr; padding: 3px;">
                     <h4>Verhalen zoekveld</h4>
                     Zoeken kan met de <a href="http://www.solrtutorial.com/solr-query-syntax.html">SolR query syntax</a>. Een aantal voorbeeld zoektermen:<br>
 
