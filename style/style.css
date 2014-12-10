@@ -17,6 +17,10 @@ h1,h2,h3,h4{
     margin : 2px;
 }
 
+.input-search{
+    font-size: 0.8em;
+}
+
 .control{
     padding: 5px;
     font-size: 0.8em;

@@ -59,7 +59,7 @@
                     <svg height="10" width="10">
                         <ellipse cx="5" cy="5" rx="5" ry="3" style="fill:yellow;stroke:purple;stroke-width:1" />
                     </svg>
-                    Genoemde locaties <br>
+                    Actielocaties <br>
                 
             <!--                    <input type="checkbox" name="lines">
                     <svg height="10" width="20">
@@ -71,9 +71,10 @@
                     <svg height="10" width="20">
                       <line x1="0" y1="2" x2="20" y2="8" style="stroke:rgb(0,0,255);stroke-width:2" />
                     </svg>
-                    Verzamelaars -> Vertellers<br> -->
-                    <input type="checkbox" name="show_info_windows" data-bind="checked: show_help_windows">Gebruikshulp<br>
-                    <input type="checkbox" name="show_info_windows" data-bind="checked: show_info_windows">Facetten<br>
+                    Verzamelaars -> Vertellers<br>
+                    <input type="checkbox" name="show_info_windows" data-bind="checked: show_help_windows">Gebruikshulp<br>-->
+                    <br>
+                    <input type="checkbox" name="show_info_windows" data-bind="checked: show_info_windows">Informatie schermen<br>
                     <input type="checkbox" name="bubbles_same_size" data-bind="checked: bubbles_same_size">Zelfde grootte<br>
                     <input type="checkbox" name="bubbles_color_intensity" data-bind="checked: bubbles_color_intensity">Op kleur<br>
                     <input type="checkbox" name="item_cloud" data-bind="checked: cloud_view">Cloud (experim.)<br>
@@ -87,38 +88,38 @@
                     Zoeken kan met de <a href="http://www.solrtutorial.com/solr-query-syntax.html">SolR query syntax</a>. Een aantal voorbeeld zoektermen:<br>
 
                     Alles:
-                    <input id="hs10" class="input-search" value="*:*" style='width:260px'/>
+                    <input id="hs10" class="input-search" value="*:*" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs10">Search</button><br>
 
                     Alle sprookjes:
                     <input id="hs1" class="input-search" value="subgenre:sprookje" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs1">Search</button><br>
 
-                    <input id="hs8" class="input-search" value='subgenre:"sprookje" AND NOT type:"boek"' style='width:300px'/>
+                    <input id="hs8" class="input-search" value='subgenre:"sprookje" AND NOT type:"boek"' style='width:190px'/>
                     <button class="search_button" data-bind="click:hs8">Search</button><br>
 
-                    <input id="hs2" class="input-search" value="type:mondeling" style='width:300px'/>
+                    <input id="hs2" class="input-search" value="type:mondeling" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs2">Search</button><br>
 
-                    <input id="hs3" class="input-search" value="administrative_area_level_1:Friesland" style='width:300px'/>
+                    <input id="hs3" class="input-search" value="administrative_area_level_1:Friesland" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs3">Search</button><br>
 
-                    <input id="hs4" class="input-search" value='language:"Standaardnederlands"' style='width:300px'/>
+                    <input id="hs4" class="input-search" value='language:"Standaardnederlands"' style='width:190px'/>
                     <button class="search_button" data-bind="click:hs4">Search</button><br>
 
-                    <input id="hs5" class="input-search" value="locality:*land" style='width:300px'/>
+                    <input id="hs5" class="input-search" value="locality:*land" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs5">Search</button><br>
 
-                    <input id="hs6" class="input-search" value="literary:*bewerkt*" style='width:300px'/>
+                    <input id="hs6" class="input-search" value="literary:*bewerkt*" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs6">Search</button><br>
 
-                    <input id="hs7" class="input-search" value="NOT administrative_area_level_1:*land" style='width:300px'/>
+                    <input id="hs7" class="input-search" value="NOT administrative_area_level_1:*land" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs7">Search</button><br>
 
-                    <input id="hs9" class="input-search" value="date:2001*" style='width:300px'/>
+                    <input id="hs9" class="input-search" value="date:2001*" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs9">Search</button><br>
 
-                    <input id="hs11" class="input-search" value="NOT country:* AND latitude:*" style='width:300px'/>
+                    <input id="hs11" class="input-search" value="NOT country:* AND latitude:*" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs11">Search</button><br>
                     <br>
 
