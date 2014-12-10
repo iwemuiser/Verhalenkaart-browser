@@ -1,0 +1,7 @@
+#accordion-resizer {
+    top: 0px;
+    bottom: 220px;
+    position: absolute;
+    width: 300px;
+	max-height: 95%;
+}

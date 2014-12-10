@@ -61,7 +61,7 @@
                     </svg>
                     Actielocaties <br>
                 
-            <!--                    <input type="checkbox" name="lines">
+<!--                    <input type="checkbox" name="lines">
                     <svg height="10" width="20">
                       <line x1="0" y1="2" x2="20" y2="8" style="stroke:rgb(0,0,0);stroke-width:2" />
                     </svg>
