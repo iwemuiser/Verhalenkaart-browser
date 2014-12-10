@@ -16,6 +16,15 @@ html, body, #map {
 h1,h2,h3,h4{
     margin : 2px;
 }
+
+.control{
+    padding: 5px;
+    font-size: 0.8em;
+    vertical-align: baseline;
+    font-family: 'Roboto', helvetica, sans-serif;
+    color: #434343;
+}
+
 .toplayer{
     border-style:ridge;
     border-width:1px;

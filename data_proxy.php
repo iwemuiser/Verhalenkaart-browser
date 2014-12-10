@@ -20,7 +20,7 @@
     
     if (array_key_exists('q', $_GET)) {
         if (array_key_exists('ne', $_GET)) { //NE location
-            $collection = "collectionid:201";
+            $collection = "collectionid:202";
             $pre_query = replace_spaces_and_cancellations($_GET["q"] . " AND " . $collection);
             $return_fields = "fl=title,country,administrative_area_level_1,administrative_area_level_2,locality,longitude,latitude,id,identifier";
             $settings = "wt=json&rows=1000000";

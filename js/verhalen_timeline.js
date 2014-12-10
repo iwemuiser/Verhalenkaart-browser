@@ -77,7 +77,7 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
 
     var detail_brush = d3.svg.brush()
         .x(x)
-        .on("brush", brushmove);
+        .on("brush", detail_brushed);
 //        .on("brushend", brushend);
 //        .on("brush", detail_brushed);
 
@@ -141,12 +141,6 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
         .attr("class", "y axis")
         .call(yAxis);
 
-    focus.selectAll("g").filter(function(d) { return d; })
-        .classed("minor", true);
-
-    focus.selectAll("text")
-        .attr("x", 4);
-
     focus.append("g")
         .attr("class", "x brush")
 //        .call(detail_brush)
@@ -171,10 +165,16 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
       .attr("y", -6)
       .attr("height", bottom_height + 7);
 
-      focus.append("path")
+    focus.append("path")
         .datum(data)
         .attr("class", "area")
         .attr("d", top_area);
+
+    focus.selectAll("g").filter(function(d) { return d; })
+        .classed("minor", true);
+
+    focus.selectAll("text")
+        .attr("x", 4);
 
 
     function brushed() {
@@ -194,8 +194,8 @@ function drawTimeline(timelineName, in_data, selectString, colors, widthOrg, hei
             .duration(1000)
             .attr("d", top_area);
         focus.select(".x.axis").call(xAxis);
-        focus.call(detail_brush.clear());
-        detail_brush.clear();
+//        focus.call(detail_brush.clear());
+//        detail_brush.clear();
     }
 
     function detail_brushed() {

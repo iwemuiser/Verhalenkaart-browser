@@ -145,11 +145,6 @@ function MapViewer(vm){
     var val_max = 0;
     var marker;
 
-    bijma = [{"naam": "A.A. Jaarsma", "latitude": 53.1737932, "longitude": 6.0567412},
-            {"naam": "Hendrik Entjes", "latitude": 52.5845594, "longitude": 6.285519399999998},
-            {"naam": "C. Bakker", "latitude": 52.4357808, "longitude": 4.991315699999973},
-            {"naam": "Boekenoogen, Gerrit Jacob", "latitude": 52.158494, "longitude": 4.496198999999933}];
-
     provincies = ["Drenthe", "Flevoland", "Friesland", "Fryslân", "Gelderland", "Groningen", "Limburg", "Noord-Brabant", "Noord-Holland", "Overijssel", "UUtrecht", "Zeeland", "Zuid-Holland"];
 
     object_colors = {   "country":      "yellow",
@@ -159,8 +154,6 @@ function MapViewer(vm){
                         "collector":    "blue",
                         "creator":      "lightgreen",
                         "ne_locality":  "yellow"};
-
-//    colors = ["#E56717", "#E66C2C", "#F87217", "#F87431", "#E67451", "#FF8040", "#F88017", "#FF7F50", "#F88158", "#F9966B", "#E78A61", "#E18B6B", "#E77471", "#F75D59", "#E55451", "#E55B3C", "#FF0000", "#FF2400", "#F62217", "#F70D1A", "#F62817", "#E42217", "#E41B17", "#DC381F", "#C34A2C", "#C24641", "#C04000", "#C11B17", "#9F000F", "#990012", "#8C001A", "#954535", "#7E3517", "#8A4117", "#7E3817", "#800517"];
 
     function n_decimals(nr, n){
         if (nr){
@@ -174,7 +167,7 @@ function MapViewer(vm){
     this.init = function(){
         overlay.onAdd = function() {
 //            console.log("Adding overlay");
-            var object_layer = d3.select(this.getPanes().overlayLayer)
+            var object_layer = d3.select(this.getPanes().overlayMouseTarget) //used to be overlayLayer
                 .append("div")
                 .attr("class", "objects")
                 .append("svg")
@@ -287,7 +280,7 @@ function MapViewer(vm){
                     
                 collector_marker.enter()
                     .append("path")
-                    .attr('d', symbol.size(2000))
+                    .attr('d', symbol.size(10))
                     .attr("stroke","black")
                     .attr("stroke-width", "1.5px")
                     .attr("fill", object_colors["collector"])
@@ -295,8 +288,8 @@ function MapViewer(vm){
                         d3.select(this)
                             .transition()
                             .ease("elastic")
-                            .attr("d", symbol.size(function(d){
-                                return 550 + (d.values.length * 5) + (map.getZoom() * 50);
+                            .attr("d", symbol_tri.size(function(d){
+                                return Math.min((d.values.length * 50) + (map.getZoom() * 50), 2000);
                             }))
                             .style("opacity", 1);
                         map.setOptions({draggableCursor:'crosshair'});
@@ -309,8 +302,8 @@ function MapViewer(vm){
                         d3.select(this)
                             .transition()
                             .ease("elastic")
-                            .attr("d", symbol.size(function(d){
-                                    return 20 + (d.values.length * 10) + (map.getZoom() * 50);
+                            .attr("d", symbol_tri.size(function(d){
+                                    return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
                             }))
                             .style("opacity", vm.opacity_collectors()); //get the opacity value from the slider again
                         map.setOptions({draggableCursor:'default'});
@@ -341,7 +334,11 @@ function MapViewer(vm){
                     })
                     .duration(1500)
                     .attr("d", symbol.size(function(d){
-                        return 20 + (d.values.length * 10) + (map.getZoom() * 50);
+                        if (vm.bubbles_same_size()){
+                            return (map.getZoom() * 5) + 60;
+                        }
+                        return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
+//                        return (Math.sqrt(d.values.length) * bubble_sizes_multiplier) + map.getZoom(); //sqrt so circles don't get too large
                     }))
                     .attr("fill", function(d){
 //                        if (vm.bubbles_color_intensity()){
@@ -440,14 +437,9 @@ function MapViewer(vm){
                             return (map.getZoom() * 5) + 60;
                         }
                         return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
-//                        return (Math.sqrt(d.values.length) * bubble_sizes_multiplier) + map.getZoom(); //sqrt so circles don't get too large
                     }))
-                        
-//                        return Math.min((d.values.length * 50) + (map.getZoom() * 5), 1000);
-//                    }))
                     .attr("fill", function(d){
                         if (vm.bubbles_color_intensity()){
-//                            return d3.rgb(255 - (Math.log(d.values.length) * 150), 255, 155 - (Math.log(d.values.length) * 150));
                             return d3.rgb((Math.log(d.values.length) * 100), 255 - (Math.log(d.values.length) * 70), 255 - (Math.log(d.values.length) * 70));
                         }
                         return object_colors["creator"];
@@ -780,5 +772,5 @@ function MapViewer(vm){
         }
     };
     // Bind our overlay to the map¦
-    overlay.setMap(map);    
+    overlay.setMap(map);
 }

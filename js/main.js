@@ -14,6 +14,9 @@ window.onload = function () {
     var waitman = new WaitViewer(vm);
     waitman.init();
 
+    var menuman = new MenuViewer(vm);
+    menuman.init();
+
     vm.doSearch();
 }
 
@@ -52,7 +55,7 @@ var ne_location_proxy = 'data_proxy.php?ne&q='
 
 var facet_proxy = 'data_proxy.php?f&q='
 
-var show_facets = ["subgenre", "type", "language", "tags", "collector", "creator", "subject", "literary", "extreme", "text_length_group", "named_entity"]
+var show_facets = ["subgenre", "type", "language", "tags", "collector", "creator", "subject", "literary", "extreme", "text_length_group", "named_entity", "administrative_area_level_1"]
 var facet_addition = "&facet=true&facet.mincount=1&wt=json&rows=0&facet.field=" + show_facets.join("&facet.field=")
 
 var province_coordinate_data = "http://geodata.nationaalgeoregister.nl/bestuurlijkegrenzen/wfs?service=WFS&version=2.0.0&request=GetFeature&outputformat=json&typename=provincies"
@@ -311,4 +314,25 @@ function UpdateCollectorData(collector_query, vm){
         vm.collector_results(nested_results);
         vm.collector_results.valueHasMutated();
     });
+}
+
+
+
+function MenuViewer(vm){
+
+    this.init = function(){
+        $(function() {
+            $( "#accordion" ).accordion({
+                heightStyle: "fill"
+            });
+        });
+        $(function() {
+            $( "#accordion-resizer" ).resizable({
+                grid: 50,
+                resize: function() {
+                    $( "#accordion" ).accordion( "refresh" );
+                }
+            });
+        });
+    }
 }
