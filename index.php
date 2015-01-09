@@ -121,6 +121,10 @@
 
                     <input id="hs11" class="input-search" value="NOT country:* AND latitude:*" style='width:190px'/>
                     <button class="search_button" data-bind="click:hs11">Search</button><br>
+                    
+                    <input id="hs12" class="input-search" value="date_start:[1800-03-06T23:59:59.999Z TO 1850-03-06T23:59:59.999Z]" style='width:190px'/>
+                    <button class="search_button" data-bind="click:hs12">Search</button><br>
+
                     <br>
 
                     <h4>Zoekresultaten</h4>
