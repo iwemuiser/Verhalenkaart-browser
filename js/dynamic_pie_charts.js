@@ -40,6 +40,8 @@ function drawPie( pieName, dataSet, selectString, colors, margin, outerRadius, i
 
     // Color Scale Handling...
     
+    d3.selectAll(".term_tip").style("visibility", "hidden"); //term tips keep coming up
+    
     //reverse sorting data to show sorted list of items in pie diagram
     dataSet.sort(function (a, b) {
         if (a.value > b.value)
@@ -100,8 +102,7 @@ function drawPie( pieName, dataSet, selectString, colors, margin, outerRadius, i
     var x = d3.scale.linear().domain([0, d3.max(dataSet, function(d) { return d.value; })]).rangeRound([0, pieWidthTotal]);
     var y = d3.scale.linear().domain([0, dataSet.length]).range([0, (dataSet.length * 20)]);
 
-
-    var synchronizedMouseOver = function() {
+    var synchronizedMouseOver = function(d) {
         var arc = d3.select(this);
         var indexValue = arc.attr("index_value");
 
@@ -118,6 +119,10 @@ function drawPie( pieName, dataSet, selectString, colors, margin, outerRadius, i
         var textSelector = "." + "pie-" + pieName + "-legendText-" + indexValue;
         var selectedLegendText = d3.selectAll(textSelector);
         selectedLegendText.style("fill", "Maroon");
+        
+        termtip.style("visibility", "visible")
+            .text(d.data.key);
+        
     };
 
     var synchronizedMouseOut = function() {
@@ -139,7 +144,14 @@ function drawPie( pieName, dataSet, selectString, colors, margin, outerRadius, i
         var textSelector = "." + "pie-" + pieName + "-legendText-" + indexValue;
         var selectedLegendText = d3.selectAll(textSelector);
         selectedLegendText.style("fill", "Blue");
+        
+        termtip.style("visibility", "hidden");
     };
+    
+    var moveTip = function(){
+        termtip.style("top", (event.pageY-10)+"px")
+                .style("left",(event.pageX+10)+"px");
+    }
 
     var addToSearchQueryRaw = function(d) {
         vm.addSearch(" AND " + pieName + ':"' + d.key + '"');
@@ -169,6 +181,15 @@ function drawPie( pieName, dataSet, selectString, colors, margin, outerRadius, i
         .attr("height", canvasHeight) //set the height of the canvas
         .append("svg:g") //make a group to hold our pie chart
         .attr("transform", "translate(" + pieCenterX + "," + pieCenterY + ")") // Set center of pie
+
+    var termtip = d3.select("body")
+        .append("div")
+        .attr("class", "term_tip")
+        .style("position", "absolute")
+        .style("background", "white")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("");
 
     // Define an arc generator. This will create <path> elements for using arc data.
     var arc = d3.svg.arc()
@@ -211,6 +232,7 @@ function drawPie( pieName, dataSet, selectString, colors, margin, outerRadius, i
       .on('click', addToSearchQuery)
       .on('mouseover', synchronizedMouseOver)
       .on("mouseout", synchronizedMouseOut)
+      .on("mousemove", moveTip)
       .transition()
         .ease("bounce")
         .duration(1000)

@@ -39,8 +39,8 @@ var show_provinces = false;
 var show_counties = false;
 
 var show_locations = true;
-var show_collectors = true;
-var show_creators = true;
+var show_collectors = false;
+var show_creators = false;
 var show_ne_locations = false;
 
 var show_collectors_locations = false;
@@ -69,6 +69,12 @@ var initial_creator_query = "*:*";
 var initial_collector_query = "*:*";
 var initial_ne_location_query = "*:*";
 var initial_facet_query = initial_location_query;
+
+var collection_folktales = "collection_id:1";
+var collection_collectors = "collection_id:9";
+var collection_creators = "collection_id:4";
+var collection_main_locations = "collection_id:202";
+var collection_ne_locations = "collection_id:201";
 
 var search_query = location_proxy + initial_location_query;
 
@@ -187,7 +193,7 @@ function ViewModel() {
 
 
     self.doLocationSearch = function(){
-        UpdateLocationData(location_proxy + self.location_query(), self);
+        UpdateLocationData(location_proxy + self.location_query() + " AND" + collection_folktales, self);
     }
 
     self.doSearch = function () {
@@ -196,26 +202,26 @@ function ViewModel() {
         }
         if (self.show_locations()){
             setTimeout(function(){ //easy now!
-                UpdateLocationData(location_proxy + self.location_query(), self);
+                UpdateLocationData(location_proxy + self.location_query() + " AND " + collection_folktales, self);
             },10);
         }
         if (self.show_collectors){
             setTimeout(function(){
-                UpdateCollectorData(collector_proxy + self.collector_query(), self);
+                UpdateCollectorData(collector_proxy + self.collector_query() + " AND " + collection_collectors, self);
             },20);
         }
         if (self.show_creators){
             setTimeout(function(){
-                UpdateCreatorData(creator_proxy + self.creator_query(), self);
+                UpdateCreatorData(creator_proxy + self.creator_query() + " AND " + collection_creators, self);
             },30);
         }
         if (self.show_ne_locations){ //the future comes soon
             setTimeout(function(){
-                UpdateNELocationData(ne_location_proxy + self.ne_location_query(), self);
+                UpdateNELocationData(ne_location_proxy + self.ne_location_query() + " AND " + collection_ne_locations, self);
             },40);
         }
 //        UpdateLocationData(location_proxy + self.location_query(), self);
-        UpdateFacetData(facet_proxy + self.location_query() + facet_addition, self);
+        UpdateFacetData(facet_proxy + self.location_query() + " AND " + collection_folktales + facet_addition, self);
     }
 
     self.emptySearchbox = function(){
@@ -260,7 +266,7 @@ function UpdateFacetData(facet_query, vm){
 
 
 function UpdateNELocationData(ne_location_query, vm){
-    console.log("NE LOCATION:" + ne_location_query);
+//    console.log("NE LOCATION:" + ne_location_query);
     vm.waiting(true);
     vm.waiting.valueHasMutated();
     $.getJSON(ne_location_query, function(response) {
@@ -276,7 +282,7 @@ function UpdateNELocationData(ne_location_query, vm){
 }
 
 function UpdateLocationData(location_query, vm){
-//    console.log("LOCATION:" + location_query);
+    console.log("LOCATION_QUERY: " + location_query);
     vm.waiting(true);
     vm.waiting.valueHasMutated();
     $.getJSON(location_query, function(response) {
@@ -292,7 +298,7 @@ function UpdateLocationData(location_query, vm){
 }
 
 function UpdateCreatorData(creator_query, vm){
-    console.log("CREATORS:" + creator_query);
+//    console.log("CREATORS:" + creator_query);
     $.getJSON(creator_query, function(response) {
 //        var jq_results = vm.creator_results;
         nested_results = d3.nest()
